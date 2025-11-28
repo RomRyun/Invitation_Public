@@ -107,8 +107,8 @@ function App() {
   const downloadICS = () => {
     const event = {
       title: '아롬 & 경륜 결혼식',
-      description: '에스가든웨딩홀 청주에서 열리는 결혼식에 초대합니다.',
-      location: '에스가든웨딩홀 청주',
+      description: '에스가든웨딩홀 청주점에서 열리는 결혼식에 초대합니다.',
+      location: '에스가든웨딩홀 청주점 (충청북도 청주시 서원구 1순환로 854)',
       startDate: '20260418T130000',
       endDate: '20260418T150000',
     };
@@ -561,7 +561,7 @@ END:VCALENDAR`;
               letterSpacing: '0.025em'
             }}>오시는 길</h2>
             <div style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#4b5563' }}>
-              <p style={{ fontSize: '1rem', fontWeight: 300, marginBottom: '0.5rem' }}>에스가든웨딩홀 청주</p>
+              <p style={{ fontSize: '1rem', fontWeight: 300, marginBottom: '0.5rem' }}>에스가든웨딩홀 청주점</p>
               <p style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '1rem' }}>2026년 4월 18일 (토) 오후 1시</p>
               <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300 }}>
                 <p style={{ marginBottom: '0.75rem', fontWeight: 400 }}>주소</p>
@@ -580,46 +580,68 @@ END:VCALENDAR`;
               </div>
               <p style={{ textAlign: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)' }}>버스 | 30-1, 30-2, 710, 843, 851</p>
             </div>
-            <div style={{
-              borderRadius: '0.75rem',
-              overflow: 'hidden',
-              boxShadow: '0 4px 16px 0 rgba(0,0,0,0.08)',
-              marginBottom: '1rem',
-              height: '280px'
+            {/* 지도 버튼들 */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '0.75rem', 
+              justifyContent: 'center',
+              flexWrap: 'wrap'
             }}>
-              <iframe
-                src="https://map.kakao.com/link/search/에스가든웨딩홀 청주"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                title="카카오맵"
-              ></iframe>
-            </div>
-            <div style={{ textAlign: 'center' }}>
               <a
-                href="https://map.kakao.com/link/search/에스가든웨딩홀 청주"
+                href="https://naver.me/5l7kwvZZ"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  display: 'inline-block',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
                   backdropFilter: 'blur(4px)',
                   WebkitBackdropFilter: 'blur(4px)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                  backgroundColor: 'rgba(3, 199, 90, 0.15)',
                   borderRadius: '0.75rem',
-                  padding: '0.625rem 1.5rem',
-                  color: '#4b5563',
+                  padding: '0.75rem 1.25rem',
+                  color: '#03C75A',
                   fontSize: '0.875rem',
-                  fontWeight: 300,
+                  fontWeight: 400,
                   textDecoration: 'none',
-                  boxShadow: '0 2px 8px 0 rgba(0,0,0,0.05)',
+                  boxShadow: '0 2px 8px 0 rgba(3, 199, 90, 0.15)',
                   transition: 'all 300ms',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  border: '1px solid rgba(3, 199, 90, 0.3)'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.7)'}
               >
-                카카오맵에서 열기
+                <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.5 14.5v-9l7 4.5-7 4.5z"/>
+                </svg>
+                네이버 지도
+              </a>
+              <a
+                href="https://kko.kakao.com/oIX0oTGwik"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
+                  backgroundColor: 'rgba(254, 229, 0, 0.2)',
+                  borderRadius: '0.75rem',
+                  padding: '0.75rem 1.25rem',
+                  color: '#3C1E1E',
+                  fontSize: '0.875rem',
+                  fontWeight: 400,
+                  textDecoration: 'none',
+                  boxShadow: '0 2px 8px 0 rgba(254, 229, 0, 0.2)',
+                  transition: 'all 300ms',
+                  cursor: 'pointer',
+                  border: '1px solid rgba(254, 229, 0, 0.5)'
+                }}
+              >
+                <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 3C6.48 3 2 6.58 2 11c0 2.83 1.86 5.3 4.6 6.7l-.96 3.6c-.1.35.3.64.6.44l4.2-2.8c.52.05 1.04.06 1.56.06 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+                </svg>
+                카카오맵
               </a>
             </div>
           </motion.div>
