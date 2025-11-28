@@ -447,16 +447,17 @@ END:VCALENDAR`;
             <div style={{ 
               fontFamily: "'Pretendard', sans-serif",
               fontSize: '1.25rem', 
-              color: theme.accentSolid, 
               fontWeight: 700,
               letterSpacing: '0.02em',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '0.75rem'
+              gap: '0.25rem'
             }}>
-              <span>2026년 4월 18일 토요일</span>
-              <span>오후 1시</span>
+              <span style={{ color: '#1f2937' }}>2026년</span>
+              <span style={{ color: theme.accentSolid }}>4월 18일</span>
+              <span style={{ color: '#1f2937' }}>토요일</span>
+              <span style={{ color: theme.accentSolid, marginLeft: '0.5rem' }}>오후 1시</span>
             </div>
           </motion.div>
 
