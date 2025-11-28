@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { config } from './config';
 import './App.css';
 
@@ -8,7 +8,13 @@ function App() {
   const [copied, setCopied] = useState({ groom: false, bride: false });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
+  const [activeMapTab, setActiveMapTab] = useState('naver');
+  const touchStartTime = useRef(0);
+  const touchMoved = useRef(false);
 
   // D-Day 카운터
   useEffect(() => {
@@ -49,41 +55,62 @@ function App() {
   // 갤러리 이미지 배열
   const galleryImages = config.gallery.filter(Boolean);
 
-  // 갤러리 스와이프 핸들러
+  // 갤러리 스와이프 핸들러 (터치)
   const handleTouchStart = (e) => {
     setStartX(e.touches[0].clientX);
+    setStartY(e.touches[0].clientY);
     setIsDragging(true);
+    touchStartTime.current = Date.now();
+    touchMoved.current = false;
   };
 
   const handleTouchMove = (e) => {
     if (!isDragging) return;
     const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
     const diffX = startX - currentX;
+    const diffY = startY - currentY;
 
-    if (Math.abs(diffX) > 50) {
-      if (diffX > 0 && currentImageIndex < galleryImages.length - 1) {
-        setCurrentImageIndex(currentImageIndex + 1);
-        setIsDragging(false);
-      } else if (diffX < 0 && currentImageIndex > 0) {
-        setCurrentImageIndex(currentImageIndex - 1);
-        setIsDragging(false);
+    // 수평 이동이 수직 이동보다 크면 스와이프로 판단
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 30) {
+      touchMoved.current = true;
+      if (Math.abs(diffX) > 50) {
+        if (diffX > 0 && currentImageIndex < galleryImages.length - 1) {
+          setCurrentImageIndex(currentImageIndex + 1);
+          setIsDragging(false);
+        } else if (diffX < 0 && currentImageIndex > 0) {
+          setCurrentImageIndex(currentImageIndex - 1);
+          setIsDragging(false);
+        }
       }
     }
   };
 
   const handleTouchEnd = () => {
+    const touchDuration = Date.now() - touchStartTime.current;
+    // 짧은 터치 + 이동 없음 = 탭 (이미지 확대)
+    if (touchDuration < 200 && !touchMoved.current) {
+      setModalImageIndex(currentImageIndex);
+      setShowModal(true);
+    }
     setIsDragging(false);
   };
 
+  // 마우스 핸들러 (PC용)
   const handleMouseDown = (e) => {
     setStartX(e.clientX);
     setIsDragging(true);
+    touchMoved.current = false;
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const currentX = e.clientX;
     const diffX = startX - currentX;
+
+    if (Math.abs(diffX) > 30) {
+      touchMoved.current = true;
+    }
 
     if (Math.abs(diffX) > 50) {
       if (diffX > 0 && currentImageIndex < galleryImages.length - 1) {
@@ -98,6 +125,19 @@ function App() {
 
   const handleMouseUp = () => {
     setIsDragging(false);
+  };
+
+  // 이미지 클릭 (PC용 확대)
+  const handleImageClick = (e) => {
+    if (!touchMoved.current) {
+      setModalImageIndex(currentImageIndex);
+      setShowModal(true);
+    }
+  };
+
+  // 모달 닫기
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   // ICS 파일 다운로드 함수
@@ -132,11 +172,102 @@ END:VCALENDAR`;
     link.click();
   };
 
+  // 지도 탭 데이터
+  const mapTabs = [
+    { id: 'naver', label: '네이버 지도', color: '#03C75A' },
+    { id: 'kakao', label: '카카오맵', color: '#FEE500' },
+    { id: 'tmap', label: 'T맵', color: '#E4002B' },
+  ];
+
   return (
     <div style={{ 
       minHeight: '100vh', 
       background: 'linear-gradient(to bottom right, #ffe4e6, #fce7f3, #e0e7ff)' 
     }}>
+      {/* 이미지 확대 모달 */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 100,
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+              cursor: 'pointer'
+            }}
+          >
+            <motion.img
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25 }}
+              src={galleryImages[modalImageIndex]}
+              alt="확대 이미지"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '90vh',
+                objectFit: 'contain',
+                borderRadius: '0.5rem',
+                cursor: 'default'
+              }}
+            />
+            {/* 닫기 버튼 */}
+            <button
+              onClick={closeModal}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                width: '2.5rem',
+                height: '2.5rem',
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ×
+            </button>
+            {/* 이미지 인디케이터 */}
+            <div style={{
+              position: 'absolute',
+              bottom: '2rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              gap: '0.5rem'
+            }}>
+              {galleryImages.map((_, index) => (
+                <div
+                  key={index}
+                  style={{
+                    width: index === modalImageIndex ? '1.5rem' : '0.5rem',
+                    height: '0.5rem',
+                    borderRadius: '9999px',
+                    backgroundColor: index === modalImageIndex ? 'white' : 'rgba(255, 255, 255, 0.4)',
+                    transition: 'all 300ms'
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Hero Section */}
       <section style={{
         minHeight: '100vh',
@@ -439,7 +570,7 @@ END:VCALENDAR`;
             WebkitBackdropFilter: 'blur(24px)',
             backgroundColor: 'rgba(255, 255, 255, 0.6)',
             borderRadius: '1rem',
-            padding: '1.5rem',
+            padding: '1rem',
             boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
             border: '1px solid rgba(255, 255, 255, 0.8)'
           }}>
@@ -447,7 +578,8 @@ END:VCALENDAR`;
               style={{
                 position: 'relative',
                 overflow: 'hidden',
-                borderRadius: '0.75rem'
+                borderRadius: '0.75rem',
+                cursor: 'pointer'
               }}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
@@ -456,80 +588,126 @@ END:VCALENDAR`;
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
+              onClick={handleImageClick}
             >
-              <div 
-                style={{
-                  display: 'flex',
-                  transition: 'transform 300ms ease-out',
-                  transform: `translateX(-${currentImageIndex * 100}%)`
-                }}
-              >
-                {galleryImages.map((image, index) => (
-                  <div key={index} style={{ minWidth: '100%', flexShrink: 0 }}>
-                    <img 
-                      src={image}
-                      alt={`갤러리 ${index + 1}`}
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        borderRadius: '0.75rem',
-                        boxShadow: '0 4px 16px 0 rgba(0,0,0,0.08)',
-                        objectFit: 'cover'
-                      }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        const errorDiv = e.target.nextElementSibling;
-                        if (errorDiv) {
-                          errorDiv.style.display = 'flex';
-                        }
-                      }}
-                    />
-                    <div style={{
-                      display: 'none',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      aspectRatio: '16/9',
-                      background: 'linear-gradient(to bottom right, #ffe4e6, #fce7f3)',
-                      borderRadius: '0.75rem'
+              {/* 고정 비율 컨테이너 (4:5 세로 비율) */}
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                paddingTop: '125%', // 4:5 비율
+                overflow: 'hidden',
+                borderRadius: '0.75rem',
+                backgroundColor: '#f3f4f6'
+              }}>
+                <div 
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    display: 'flex',
+                    transition: 'transform 300ms ease-out',
+                    transform: `translateX(-${currentImageIndex * 100}%)`
+                  }}
+                >
+                  {galleryImages.map((image, index) => (
+                    <div key={index} style={{ 
+                      minWidth: '100%', 
+                      flexShrink: 0,
+                      position: 'relative'
                     }}>
-                      <div style={{ color: '#9ca3af', textAlign: 'center', padding: '1rem' }}>
-                        <svg style={{ width: '4rem', height: '4rem', margin: '0 auto 0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <p style={{ fontSize: '0.875rem', fontWeight: 300 }}>사진 {index + 1}</p>
-                        <p style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#9ca3af' }}>/public/gallery-{index + 1}.jpg 파일을 추가하세요</p>
+                      <img 
+                        src={image}
+                        alt={`갤러리 ${index + 1}`}
+                        draggable={false}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          objectPosition: 'center',
+                          userSelect: 'none'
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          const errorDiv = e.target.nextElementSibling;
+                          if (errorDiv) {
+                            errorDiv.style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <div style={{
+                        display: 'none',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(to bottom right, #ffe4e6, #fce7f3)'
+                      }}>
+                        <div style={{ color: '#9ca3af', textAlign: 'center', padding: '1rem' }}>
+                          <svg style={{ width: '3rem', height: '3rem', margin: '0 auto 0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <p style={{ fontSize: '0.75rem', fontWeight: 300 }}>사진 {index + 1}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              
-              {galleryImages.length > 1 && (
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  marginTop: '1rem'
-                }}>
-                  {galleryImages.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      style={{
-                        width: index === currentImageIndex ? '1.5rem' : '0.5rem',
-                        height: '0.5rem',
-                        borderRadius: '9999px',
-                        border: 'none',
-                        backgroundColor: index === currentImageIndex ? '#fb7185' : '#d1d5db',
-                        cursor: 'pointer',
-                        transition: 'all 300ms'
-                      }}
-                      aria-label={`이미지 ${index + 1}로 이동`}
-                    />
                   ))}
                 </div>
-              )}
+              </div>
+              
+              {/* 터치 힌트 */}
+              <div style={{
+                position: 'absolute',
+                bottom: '0.75rem',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                color: 'white',
+                fontSize: '0.625rem',
+                padding: '0.25rem 0.75rem',
+                borderRadius: '9999px',
+                pointerEvents: 'none'
+              }}>
+                터치하여 확대
+              </div>
             </div>
+            
+            {/* 인디케이터 */}
+            {galleryImages.length > 1 && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                marginTop: '1rem'
+              }}>
+                {galleryImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex(index);
+                    }}
+                    style={{
+                      width: index === currentImageIndex ? '1.5rem' : '0.5rem',
+                      height: '0.5rem',
+                      borderRadius: '9999px',
+                      border: 'none',
+                      backgroundColor: index === currentImageIndex ? '#fb7185' : '#d1d5db',
+                      cursor: 'pointer',
+                      transition: 'all 300ms'
+                    }}
+                    aria-label={`이미지 ${index + 1}로 이동`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -576,7 +754,141 @@ END:VCALENDAR`;
                 </p>
               </div>
             </div>
-            <div style={{ marginBottom: '1.5rem', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            
+            {/* 지도 탭 */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '0.25rem',
+              marginBottom: '1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              borderRadius: '0.75rem',
+              padding: '0.25rem'
+            }}>
+              {mapTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveMapTab(tab.id)}
+                  style={{
+                    flex: 1,
+                    padding: '0.625rem 0.5rem',
+                    borderRadius: '0.5rem',
+                    border: 'none',
+                    backgroundColor: activeMapTab === tab.id ? 'white' : 'transparent',
+                    color: activeMapTab === tab.id ? '#374151' : '#6b7280',
+                    fontSize: '0.8125rem',
+                    fontWeight: activeMapTab === tab.id ? 500 : 300,
+                    cursor: 'pointer',
+                    transition: 'all 200ms',
+                    boxShadow: activeMapTab === tab.id ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 지도 iframe */}
+            <div style={{
+              borderRadius: '0.75rem',
+              overflow: 'hidden',
+              boxShadow: '0 4px 16px 0 rgba(0,0,0,0.08)',
+              marginBottom: '1rem',
+              height: '280px',
+              backgroundColor: '#f3f4f6'
+            }}>
+              {activeMapTab === 'naver' && (
+                <iframe
+                  src={`https://map.naver.com/p/search/${encodeURIComponent(config.venue.name)}`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  title="네이버 지도"
+                ></iframe>
+              )}
+              {activeMapTab === 'kakao' && (
+                <iframe
+                  src={`https://map.kakao.com/link/search/${encodeURIComponent(config.venue.name)}`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  title="카카오맵"
+                ></iframe>
+              )}
+              {activeMapTab === 'tmap' && (
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#f9fafb',
+                  flexDirection: 'column',
+                  gap: '1rem'
+                }}>
+                  <svg style={{ width: '3rem', height: '3rem', color: '#E4002B' }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                  <p style={{ color: '#6b7280', fontSize: '0.875rem', textAlign: 'center' }}>
+                    T맵 앱에서 길안내를 받으세요
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* 지도 앱 열기 버튼 */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center'
+            }}>
+              <a
+                href={
+                  activeMapTab === 'naver' ? config.maps.naver :
+                  activeMapTab === 'kakao' ? config.maps.kakao :
+                  config.maps.tmap || `tmap://route?goalname=${encodeURIComponent(config.venue.name)}&goalx=${config.venue.longitude || ''}&goaly=${config.venue.latitude || ''}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
+                  backgroundColor: 
+                    activeMapTab === 'naver' ? 'rgba(3, 199, 90, 0.15)' :
+                    activeMapTab === 'kakao' ? 'rgba(254, 229, 0, 0.2)' :
+                    'rgba(228, 0, 43, 0.15)',
+                  borderRadius: '0.75rem',
+                  padding: '0.75rem 1.5rem',
+                  color: 
+                    activeMapTab === 'naver' ? '#03C75A' :
+                    activeMapTab === 'kakao' ? '#3C1E1E' :
+                    '#E4002B',
+                  fontSize: '0.875rem',
+                  fontWeight: 400,
+                  textDecoration: 'none',
+                  boxShadow: '0 2px 8px 0 rgba(0,0,0,0.1)',
+                  transition: 'all 300ms',
+                  cursor: 'pointer',
+                  border: `1px solid ${
+                    activeMapTab === 'naver' ? 'rgba(3, 199, 90, 0.3)' :
+                    activeMapTab === 'kakao' ? 'rgba(254, 229, 0, 0.5)' :
+                    'rgba(228, 0, 43, 0.3)'
+                  }`
+                }}
+              >
+                <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                {activeMapTab === 'naver' ? '네이버 지도' : activeMapTab === 'kakao' ? '카카오맵' : 'T맵'}에서 열기
+              </a>
+            </div>
+
+            {/* 교통편 정보 */}
+            <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <p style={{ textAlign: 'center', marginBottom: '0.75rem', fontWeight: 400 }}>교통편</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textAlign: 'center' }}>
                 {config.transportation.map((item, index) => (
@@ -586,70 +898,6 @@ END:VCALENDAR`;
               {config.busInfo && (
                 <p style={{ textAlign: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)' }}>{config.busInfo}</p>
               )}
-            </div>
-            {/* 지도 버튼들 */}
-            <div style={{ 
-              display: 'flex', 
-              gap: '0.75rem', 
-              justifyContent: 'center',
-              flexWrap: 'wrap'
-            }}>
-              <a
-                href={config.maps.naver}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                  backgroundColor: 'rgba(3, 199, 90, 0.15)',
-                  borderRadius: '0.75rem',
-                  padding: '0.75rem 1.25rem',
-                  color: '#03C75A',
-                  fontSize: '0.875rem',
-                  fontWeight: 400,
-                  textDecoration: 'none',
-                  boxShadow: '0 2px 8px 0 rgba(3, 199, 90, 0.15)',
-                  transition: 'all 300ms',
-                  cursor: 'pointer',
-                  border: '1px solid rgba(3, 199, 90, 0.3)'
-                }}
-              >
-                <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.5 14.5v-9l7 4.5-7 4.5z"/>
-                </svg>
-                네이버 지도
-              </a>
-              <a
-                href={config.maps.kakao}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                  backgroundColor: 'rgba(254, 229, 0, 0.2)',
-                  borderRadius: '0.75rem',
-                  padding: '0.75rem 1.25rem',
-                  color: '#3C1E1E',
-                  fontSize: '0.875rem',
-                  fontWeight: 400,
-                  textDecoration: 'none',
-                  boxShadow: '0 2px 8px 0 rgba(254, 229, 0, 0.2)',
-                  transition: 'all 300ms',
-                  cursor: 'pointer',
-                  border: '1px solid rgba(254, 229, 0, 0.5)'
-                }}
-              >
-                <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 3C6.48 3 2 6.58 2 11c0 2.83 1.86 5.3 4.6 6.7l-.96 3.6c-.1.35.3.64.6.44l4.2-2.8c.52.05 1.04.06 1.56.06 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
-                </svg>
-                카카오맵
-              </a>
             </div>
           </motion.div>
         </div>
