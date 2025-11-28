@@ -317,8 +317,11 @@ END:VCALENDAR`;
             position: 'relative',
             zIndex: 10,
             paddingTop: '2.5rem',
-            paddingLeft: '2rem',
-            paddingRight: '2rem'
+            paddingLeft: '1.5rem',
+            paddingRight: '1.5rem',
+            width: '100%',
+            maxWidth: '420px',
+            margin: '0 auto'
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -327,43 +330,45 @@ END:VCALENDAR`;
           <motion.div 
             style={{ 
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: '3rem', 
-              letterSpacing: '0.15em', 
+              fontSize: '2.25rem', 
+              letterSpacing: '0.2em', 
               color: theme.accent, 
               fontWeight: 300,
               textAlign: 'left',
               lineHeight: 1.1
             }}
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >WEDDING</motion.div>
           <motion.div 
             style={{ 
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: '3rem', 
-              letterSpacing: '0.15em', 
+              fontSize: '2.25rem', 
+              letterSpacing: '0.2em', 
               color: theme.accent, 
               fontWeight: 300,
               textAlign: 'right',
               lineHeight: 1.1
             }}
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >INVITATION</motion.div>
         </motion.div>
 
-        {/* 중앙: 신랑 신부 이름 (한 줄) */}
+        {/* 중앙: 신랑 신부 이름 + 날짜 */}
         <div style={{ 
           flex: 1, 
           display: 'flex', 
+          flexDirection: 'column',
           alignItems: 'center', 
           justifyContent: 'center',
           position: 'relative',
           zIndex: 10,
-          paddingTop: '15vh'
+          paddingTop: '5vh'
         }}>
+          {/* 이름 */}
           <motion.div
             style={{ 
               textAlign: 'center',
@@ -406,35 +411,33 @@ END:VCALENDAR`;
               letterSpacing: '0.05em'
             }}>{config.bride.name}</span>
           </motion.div>
-        </div>
 
-        {/* 하단: 날짜 */}
-        <motion.div
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            paddingBottom: '4rem',
-            textAlign: 'center'
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <div style={{ 
-            fontSize: '1rem', 
-            color: '#4b5563', 
-            marginBottom: '0.25rem',
-            fontWeight: 300,
-            letterSpacing: '0.05em'
-          }}>
-            {config.wedding.dateText}
-          </div>
-          <div style={{ 
-            fontSize: '0.875rem', 
-            color: '#6b7280', 
-            fontWeight: 300
-          }}>{config.wedding.timeText}</div>
-        </motion.div>
+          {/* 날짜 (이름 아래) */}
+          <motion.div
+            style={{
+              textAlign: 'center',
+              marginTop: '2rem'
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            <div style={{ 
+              fontSize: '0.9375rem', 
+              color: '#4b5563', 
+              marginBottom: '0.25rem',
+              fontWeight: 300,
+              letterSpacing: '0.05em'
+            }}>
+              {config.wedding.dateText}
+            </div>
+            <div style={{ 
+              fontSize: '0.875rem', 
+              color: '#6b7280', 
+              fontWeight: 300
+            }}>{config.wedding.timeText}</div>
+          </motion.div>
+        </div>
 
         {/* 스크롤 화살표 */}
         <motion.div
