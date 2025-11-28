@@ -351,11 +351,11 @@ END:VCALENDAR`;
         >
           <motion.div 
             style={{ 
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: '2.25rem', 
-              letterSpacing: '0.2em', 
-              color: theme.accent, 
-              fontWeight: 300,
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', serif",
+              fontSize: '2.5rem', 
+              letterSpacing: '0.15em', 
+              color: theme.accentSolid, 
+              fontWeight: 600,
               textAlign: 'left',
               lineHeight: 1.1
             }}
@@ -365,11 +365,11 @@ END:VCALENDAR`;
           >WEDDING</motion.div>
           <motion.div 
             style={{ 
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: '2.25rem', 
-              letterSpacing: '0.2em', 
-              color: theme.accent, 
-              fontWeight: 300,
+              fontFamily: "'Playfair Display', 'Cormorant Garamond', serif",
+              fontSize: '2.5rem', 
+              letterSpacing: '0.15em', 
+              color: theme.accentSolid, 
+              fontWeight: 600,
               textAlign: 'right',
               lineHeight: 1.1
             }}
@@ -413,11 +413,11 @@ END:VCALENDAR`;
             <motion.span 
               style={{ 
                 fontSize: '1.75rem',
-                color: theme.accentSolid,
-                filter: 'drop-shadow(0 0 8px rgba(134, 239, 172, 0.5))'
+                color: theme.heart,
+                filter: 'drop-shadow(0 0 6px rgba(22, 163, 74, 0.4))'
               }}
               animate={{ 
-                scale: [1, 1.2, 1],
+                scale: [1, 1.15, 1],
               }}
               transition={{ 
                 duration: 1.5, 
@@ -434,7 +434,7 @@ END:VCALENDAR`;
             }}>{config.bride.name}</span>
           </motion.div>
 
-          {/* 날짜 + 시간 (한 줄) */}
+          {/* 날짜 + 시간 */}
           <motion.div
             style={{
               textAlign: 'center',
@@ -446,21 +446,17 @@ END:VCALENDAR`;
           >
             <div style={{ 
               fontFamily: "'Pretendard', sans-serif",
-              fontSize: '1.125rem', 
-              color: '#374151', 
-              fontWeight: 500,
+              fontSize: '1.25rem', 
+              color: theme.accentSolid, 
+              fontWeight: 700,
               letterSpacing: '0.02em',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '0.5rem'
+              gap: '0.75rem'
             }}>
               <span>2026년 4월 18일 토요일</span>
-              <span style={{ 
-                color: theme.accentSolid, 
-                fontWeight: 700,
-                fontSize: '1.25rem'
-              }}>오후 1시</span>
+              <span>오후 1시</span>
             </div>
           </motion.div>
 

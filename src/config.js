@@ -27,10 +27,10 @@ export const colorPalettes = {
     // 배경 그라데이션
     bgGradient: 'linear-gradient(to bottom right, #dcfce7, #d1fae5, #e0f2fe)',
     bgOverlay: 'linear-gradient(to bottom right, rgba(74, 222, 128, 0.2), rgba(52, 211, 153, 0.2), rgba(147, 197, 253, 0.2))',
-    // 텍스트 강조색
-    accent: 'rgba(74, 222, 128, 0.8)',
-    accentSolid: '#4ade80',
-    heart: '#86efac',
+    // 텍스트 강조색 (어두운 그린)
+    accent: 'rgba(22, 163, 74, 0.85)',
+    accentSolid: '#15803d',
+    heart: '#16a34a',
     // 갤러리 에러 배경
     galleryErrorBg: 'linear-gradient(to bottom right, #dcfce7, #d1fae5)',
     // 인디케이터
