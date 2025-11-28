@@ -1,7 +1,49 @@
 // 청첩장 텍스트 및 설정 파일
 // 이 파일에서 모든 텍스트를 수정하세요!
 
+// ===== 컬러 테마 옵션 =====
+export const ColorTheme = {
+  PINK: 1,   // 핑크 테마
+  GREEN: 2,  // 그린 테마
+};
+
+// ===== 컬러 팔레트 정의 =====
+export const colorPalettes = {
+  [ColorTheme.PINK]: {
+    // 배경 그라데이션
+    bgGradient: 'linear-gradient(to bottom right, #ffe4e6, #fce7f3, #e0e7ff)',
+    bgOverlay: 'linear-gradient(to bottom right, rgba(251, 113, 133, 0.2), rgba(244, 114, 182, 0.2), rgba(196, 181, 253, 0.2))',
+    // 텍스트 강조색
+    accent: 'rgba(251, 113, 133, 0.8)',
+    accentSolid: '#fb7185',
+    heart: '#fda4af',
+    // 갤러리 에러 배경
+    galleryErrorBg: 'linear-gradient(to bottom right, #ffe4e6, #fce7f3)',
+    // 인디케이터
+    indicatorActive: '#fb7185',
+    indicatorInactive: '#d1d5db',
+  },
+  [ColorTheme.GREEN]: {
+    // 배경 그라데이션
+    bgGradient: 'linear-gradient(to bottom right, #dcfce7, #d1fae5, #e0f2fe)',
+    bgOverlay: 'linear-gradient(to bottom right, rgba(74, 222, 128, 0.2), rgba(52, 211, 153, 0.2), rgba(147, 197, 253, 0.2))',
+    // 텍스트 강조색
+    accent: 'rgba(74, 222, 128, 0.8)',
+    accentSolid: '#4ade80',
+    heart: '#86efac',
+    // 갤러리 에러 배경
+    galleryErrorBg: 'linear-gradient(to bottom right, #dcfce7, #d1fae5)',
+    // 인디케이터
+    indicatorActive: '#4ade80',
+    indicatorInactive: '#d1d5db',
+  },
+};
+
 export const config = {
+  // ===== 테마 설정 =====
+  // ColorTheme.PINK (1) 또는 ColorTheme.GREEN (2) 선택
+  colorTheme: ColorTheme.PINK,
+
   // ===== 신랑/신부 정보 =====
   groom: {
     name: '아롬',

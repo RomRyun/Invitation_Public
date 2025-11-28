@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { config } from './config';
+import { config, colorPalettes } from './config';
 import './App.css';
+
+// 현재 테마 색상
+const theme = colorPalettes[config.colorTheme];
 
 function App() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -182,7 +185,7 @@ END:VCALENDAR`;
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: 'linear-gradient(to bottom right, #ffe4e6, #fce7f3, #e0e7ff)' 
+      background: theme.bgGradient 
     }}>
       {/* 이미지 확대 모달 */}
       <AnimatePresence>
@@ -280,7 +283,7 @@ END:VCALENDAR`;
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to bottom right, rgba(251, 113, 133, 0.2), rgba(244, 114, 182, 0.2), rgba(196, 181, 253, 0.2))'
+          background: theme.bgOverlay
         }}></div>
         <div style={{
           position: 'absolute',
@@ -298,7 +301,7 @@ END:VCALENDAR`;
             <div style={{ 
               fontSize: '0.75rem', 
               letterSpacing: '0.3em', 
-              color: 'rgba(251, 113, 133, 0.8)', 
+              color: theme.accent, 
               marginBottom: '2rem',
               fontWeight: 300
             }}>WEDDING INVITATION</div>
@@ -310,7 +313,7 @@ END:VCALENDAR`;
               letterSpacing: '-0.025em'
             }}>{config.groom.name}</h1>
             <div style={{ fontSize: '1.875rem', marginBottom: '0.75rem' }}>
-              <span style={{ color: '#fda4af' }}>♥</span>
+              <span style={{ color: theme.heart }}>♥</span>
             </div>
             <h1 style={{ 
               fontSize: '2.25rem', 
@@ -648,7 +651,7 @@ END:VCALENDAR`;
                         height: '100%',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: 'linear-gradient(to bottom right, #ffe4e6, #fce7f3)'
+                        background: theme.galleryErrorBg
                       }}>
                         <div style={{ color: '#9ca3af', textAlign: 'center', padding: '1rem' }}>
                           <svg style={{ width: '3rem', height: '3rem', margin: '0 auto 0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -699,7 +702,7 @@ END:VCALENDAR`;
                       height: '0.5rem',
                       borderRadius: '9999px',
                       border: 'none',
-                      backgroundColor: index === currentImageIndex ? '#fb7185' : '#d1d5db',
+                      backgroundColor: index === currentImageIndex ? theme.indicatorActive : theme.indicatorInactive,
                       cursor: 'pointer',
                       transition: 'all 300ms'
                     }}
