@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { config } from './config';
 import './App.css';
 
 function App() {
@@ -11,7 +12,7 @@ function App() {
 
   // D-Day 카운터
   useEffect(() => {
-    const targetDate = new Date('2026-04-18T13:00:00').getTime();
+    const targetDate = new Date(`${config.wedding.date}T${config.wedding.time}:00`).getTime();
     
     const updateTimer = () => {
       const now = new Date().getTime();
@@ -46,11 +47,7 @@ function App() {
   };
 
   // 갤러리 이미지 배열
-  const galleryImages = [
-    '/gallery-1.jpg',
-    // '/gallery-2.jpg',
-    // '/gallery-3.jpg',
-  ].filter(Boolean);
+  const galleryImages = config.gallery.filter(Boolean);
 
   // 갤러리 스와이프 핸들러
   const handleTouchStart = (e) => {
@@ -105,22 +102,23 @@ function App() {
 
   // ICS 파일 다운로드 함수
   const downloadICS = () => {
+    const dateFormatted = config.wedding.date.replace(/-/g, '');
+    const timeFormatted = config.wedding.time.replace(':', '') + '00';
+    
     const event = {
-      title: '아롬 & 경륜 결혼식',
-      description: '에스가든웨딩홀 청주점에서 열리는 결혼식에 초대합니다.',
-      location: '에스가든웨딩홀 청주점 (충청북도 청주시 서원구 1순환로 854)',
-      startDate: '20260418T130000',
-      endDate: '20260418T150000',
+      title: `${config.groom.name} & ${config.bride.name} 결혼식`,
+      description: `${config.venue.name}에서 열리는 결혼식에 초대합니다.`,
+      location: `${config.venue.name} (${config.venue.address})`,
     };
 
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Wedding Invitation//KR
 BEGIN:VEVENT
-UID:wedding-2026-04-18@invitation
+UID:wedding-${config.wedding.date}@invitation
 DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DTSTART:20260418T130000
-DTEND:20260418T150000
+DTSTART:${dateFormatted}T${timeFormatted}
+DTEND:${dateFormatted}T${String(parseInt(config.wedding.time.split(':')[0]) + 2).padStart(2, '0')}0000
 SUMMARY:${event.title}
 DESCRIPTION:${event.description}
 LOCATION:${event.location}
@@ -179,7 +177,7 @@ END:VCALENDAR`;
               color: '#1f2937', 
               marginBottom: '0.75rem',
               letterSpacing: '-0.025em'
-            }}>아롬</h1>
+            }}>{config.groom.name}</h1>
             <div style={{ fontSize: '1.875rem', marginBottom: '0.75rem' }}>
               <span style={{ color: '#fda4af' }}>♥</span>
             </div>
@@ -189,7 +187,7 @@ END:VCALENDAR`;
               color: '#1f2937', 
               marginBottom: '3rem',
               letterSpacing: '-0.025em'
-            }}>경륜</h1>
+            }}>{config.bride.name}</h1>
             <div style={{ 
               fontSize: '1rem', 
               color: '#4b5563', 
@@ -197,13 +195,13 @@ END:VCALENDAR`;
               fontWeight: 300,
               letterSpacing: '0.025em'
             }}>
-              2026년 4월 18일 토요일
+              {config.wedding.dateText}
             </div>
             <div style={{ 
               fontSize: '0.875rem', 
               color: '#6b7280', 
               fontWeight: 300
-            }}>오후 1시</div>
+            }}>{config.wedding.timeText}</div>
           </motion.div>
         </div>
 
@@ -250,7 +248,7 @@ END:VCALENDAR`;
               marginBottom: '2rem',
               color: '#374151',
               letterSpacing: '0.025em'
-            }}>초대합니다</h2>
+            }}>{config.greeting.title}</h2>
             <div style={{ 
               display: 'flex',
               flexDirection: 'column',
@@ -261,12 +259,14 @@ END:VCALENDAR`;
               textAlign: 'center'
             }}>
               <p style={{ fontWeight: 300 }}>
-                서로의 삶에 따뜻한 동반자가 되어<br />
-                사랑과 신뢰로 한 가정을 이루려 합니다.
+                {config.greeting.message.map((line, i) => (
+                  <span key={i}>{line}{i < config.greeting.message.length - 1 && <br />}</span>
+                ))}
               </p>
               <p style={{ fontWeight: 300, paddingTop: '0.5rem' }}>
-                축복의 자리에 귀한 걸음 하시어<br />
-                저희의 새로운 시작을 함께해 주세요.
+                {config.greeting.subMessage.map((line, i) => (
+                  <span key={i}>{line}{i < config.greeting.subMessage.length - 1 && <br />}</span>
+                ))}
               </p>
             </div>
             <div style={{
@@ -280,8 +280,8 @@ END:VCALENDAR`;
               color: '#4b5563',
               fontSize: '0.875rem'
             }}>
-              <p style={{ fontWeight: 300 }}>이원조 · 이정숙의 장남 아롬</p>
-              <p style={{ fontWeight: 300 }}>신락현 · 곽광숙의 장녀 경륜</p>
+              <p style={{ fontWeight: 300 }}>{config.groom.fatherName} · {config.groom.motherName}의 {config.groom.relation} {config.groom.name}</p>
+              <p style={{ fontWeight: 300 }}>{config.bride.fatherName} · {config.bride.motherName}의 {config.bride.relation} {config.bride.name}</p>
             </div>
           </motion.div>
         </div>
@@ -390,7 +390,7 @@ END:VCALENDAR`;
               minHeight: '200px'
             }}>
               <img 
-                src="/pixel-art.gif" 
+                src={config.pixelArt}
                 alt="픽셀아트" 
                 style={{
                   maxWidth: '100%',
@@ -561,24 +561,31 @@ END:VCALENDAR`;
               letterSpacing: '0.025em'
             }}>오시는 길</h2>
             <div style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#4b5563' }}>
-              <p style={{ fontSize: '1rem', fontWeight: 300, marginBottom: '0.5rem' }}>에스가든웨딩홀 청주점</p>
-              <p style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '1rem' }}>2026년 4월 18일 (토) 오후 1시</p>
+              <p style={{ fontSize: '1rem', fontWeight: 300, marginBottom: '0.5rem' }}>{config.venue.name}</p>
+              {config.venue.hall && (
+                <p style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '0.5rem' }}>{config.venue.hall}</p>
+              )}
+              <p style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '1rem' }}>{config.wedding.dateText} {config.wedding.timeText}</p>
               <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300 }}>
                 <p style={{ marginBottom: '0.75rem', fontWeight: 400 }}>주소</p>
                 <p style={{ lineHeight: 1.625 }}>
-                  충청북도 청주시 서원구 1순환로 854<br />
-                  <span style={{ color: '#6b7280' }}>(산남동 320번지, CJB미디어센터)</span>
+                  {config.venue.address}<br />
+                  {config.venue.addressDetail && (
+                    <span style={{ color: '#6b7280' }}>{config.venue.addressDetail}</span>
+                  )}
                 </p>
               </div>
             </div>
             <div style={{ marginBottom: '1.5rem', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <p style={{ textAlign: 'center', marginBottom: '0.75rem', fontWeight: 400 }}>교통편</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textAlign: 'center' }}>
-                <p>남부터미널 | 자차 5분 · 대중교통 20분</p>
-                <p>가경시외버스터미널 | 자차 10분 · 대중교통 30분</p>
-                <p>서청주IC | 자차 15분</p>
+                {config.transportation.map((item, index) => (
+                  <p key={index}>{item}</p>
+                ))}
               </div>
-              <p style={{ textAlign: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)' }}>버스 | 30-1, 30-2, 710, 843, 851</p>
+              {config.busInfo && (
+                <p style={{ textAlign: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)' }}>{config.busInfo}</p>
+              )}
             </div>
             {/* 지도 버튼들 */}
             <div style={{ 
@@ -588,7 +595,7 @@ END:VCALENDAR`;
               flexWrap: 'wrap'
             }}>
               <a
-                href="https://naver.me/5l7kwvZZ"
+                href={config.maps.naver}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -616,7 +623,7 @@ END:VCALENDAR`;
                 네이버 지도
               </a>
               <a
-                href="https://kko.kakao.com/oIX0oTGwik"
+                href={config.maps.kakao}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -692,12 +699,12 @@ END:VCALENDAR`;
                 fontSize: '0.875rem',
                 textAlign: 'center'
               }}>
-                <p style={{ fontWeight: 300 }}>은행명 <span style={{ marginLeft: '0.5rem' }}>예시은행</span></p>
-                <p style={{ fontWeight: 300 }}>계좌번호 <span style={{ marginLeft: '0.5rem' }}>123-456-789012</span></p>
-                <p style={{ fontWeight: 300 }}>예금주 <span style={{ marginLeft: '0.5rem' }}>아롬</span></p>
+                <p style={{ fontWeight: 300 }}>은행명 <span style={{ marginLeft: '0.5rem' }}>{config.accounts.groom.bank}</span></p>
+                <p style={{ fontWeight: 300 }}>계좌번호 <span style={{ marginLeft: '0.5rem' }}>{config.accounts.groom.accountNumber}</span></p>
+                <p style={{ fontWeight: 300 }}>예금주 <span style={{ marginLeft: '0.5rem' }}>{config.accounts.groom.holder}</span></p>
               </div>
               <button
-                onClick={() => copyToClipboard('예시은행 123-456-789012 아롬', 'groom')}
+                onClick={() => copyToClipboard(`${config.accounts.groom.bank} ${config.accounts.groom.accountNumber} ${config.accounts.groom.holder}`, 'groom')}
                 style={{
                   width: '100%',
                   marginTop: '1.25rem',
@@ -753,12 +760,12 @@ END:VCALENDAR`;
                 fontSize: '0.875rem',
                 textAlign: 'center'
               }}>
-                <p style={{ fontWeight: 300 }}>은행명 <span style={{ marginLeft: '0.5rem' }}>예시은행</span></p>
-                <p style={{ fontWeight: 300 }}>계좌번호 <span style={{ marginLeft: '0.5rem' }}>987-654-321098</span></p>
-                <p style={{ fontWeight: 300 }}>예금주 <span style={{ marginLeft: '0.5rem' }}>경륜</span></p>
+                <p style={{ fontWeight: 300 }}>은행명 <span style={{ marginLeft: '0.5rem' }}>{config.accounts.bride.bank}</span></p>
+                <p style={{ fontWeight: 300 }}>계좌번호 <span style={{ marginLeft: '0.5rem' }}>{config.accounts.bride.accountNumber}</span></p>
+                <p style={{ fontWeight: 300 }}>예금주 <span style={{ marginLeft: '0.5rem' }}>{config.accounts.bride.holder}</span></p>
               </div>
               <button
-                onClick={() => copyToClipboard('예시은행 987-654-321098 경륜', 'bride')}
+                onClick={() => copyToClipboard(`${config.accounts.bride.bank} ${config.accounts.bride.accountNumber} ${config.accounts.bride.holder}`, 'bride')}
                 style={{
                   width: '100%',
                   marginTop: '1.25rem',
@@ -853,8 +860,8 @@ END:VCALENDAR`;
       {/* Footer */}
       <footer style={{ padding: '3rem 1rem', textAlign: 'center', color: '#6b7280' }}>
         <div className="container">
-          <p style={{ marginBottom: '0.375rem', fontSize: '0.875rem', fontWeight: 300 }}>아롬 ♥ 경륜</p>
-          <p style={{ fontSize: '0.75rem', fontWeight: 300 }}>2026년 4월 18일</p>
+          <p style={{ marginBottom: '0.375rem', fontSize: '0.875rem', fontWeight: 300 }}>{config.groom.name} ♥ {config.bride.name}</p>
+          <p style={{ fontSize: '0.75rem', fontWeight: 300 }}>{config.wedding.dateText}</p>
         </div>
       </footer>
     </div>
