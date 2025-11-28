@@ -27,8 +27,8 @@ function App() {
     { id: 'story', label: '우리의 이야기' },
     { id: 'gallery', label: '갤러리' },
     { id: 'location', label: '오시는 길' },
-    { id: 'dday', label: 'D-Day' },
-    { id: 'calendar', label: '캘린더' },
+    // { id: 'dday', label: 'D-Day' },
+    // { id: 'calendar', label: '캘린더' },
     { id: 'account', label: '마음 전하실 곳' },
   ];
 
@@ -404,11 +404,11 @@ END:VCALENDAR`;
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <span style={{ 
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'Nanum Myeongjo', 'MaruBuri', serif",
               fontSize: '2rem', 
-              fontWeight: 400, 
+              fontWeight: 700, 
               color: '#374151', 
-              letterSpacing: '0.05em'
+              letterSpacing: '0.1em'
             }}>{config.groom.name}</span>
             <motion.span 
               style={{ 
@@ -426,38 +426,70 @@ END:VCALENDAR`;
               }}
             >♥</motion.span>
             <span style={{ 
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'Nanum Myeongjo', 'MaruBuri', serif",
               fontSize: '2rem', 
-              fontWeight: 400, 
+              fontWeight: 700, 
               color: '#374151',
-              letterSpacing: '0.05em'
+              letterSpacing: '0.1em'
             }}>{config.bride.name}</span>
           </motion.div>
 
-          {/* 날짜 (이름 아래) */}
+          {/* 날짜 + 시간 (한 줄) */}
           <motion.div
             style={{
               textAlign: 'center',
-              marginTop: '2rem'
+              marginTop: '1.5rem'
             }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             <div style={{ 
-              fontSize: '0.9375rem', 
-              color: '#4b5563', 
-              marginBottom: '0.25rem',
-              fontWeight: 300,
-              letterSpacing: '0.05em'
+              fontFamily: "'Pretendard', sans-serif",
+              fontSize: '1.125rem', 
+              color: '#374151', 
+              fontWeight: 500,
+              letterSpacing: '0.02em',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem'
             }}>
-              {config.wedding.dateText}
+              <span>2026년 4월 18일 토요일</span>
+              <span style={{ 
+                color: theme.accentSolid, 
+                fontWeight: 700,
+                fontSize: '1.25rem'
+              }}>오후 1시</span>
+            </div>
+          </motion.div>
+
+          {/* 장소 (강조) */}
+          <motion.div
+            style={{
+              textAlign: 'center',
+              marginTop: '1.25rem'
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+          >
+            <div style={{ 
+              fontFamily: "'Pretendard', sans-serif",
+              fontSize: '1.25rem', 
+              color: '#1f2937', 
+              fontWeight: 600,
+              letterSpacing: '0.05em',
+              marginBottom: '0.375rem'
+            }}>
+              {config.venue.name}
             </div>
             <div style={{ 
+              fontFamily: "'Pretendard', sans-serif",
               fontSize: '0.875rem', 
               color: '#6b7280', 
-              fontWeight: 300
-            }}>{config.wedding.timeText}</div>
+              fontWeight: 400
+            }}>{config.venue.hall}</div>
           </motion.div>
         </div>
 
@@ -499,12 +531,13 @@ END:VCALENDAR`;
             transition={{ duration: 0.6 }}
           >
             <h2 style={{
+              fontFamily: "'Nanum Myeongjo', 'MaruBuri', serif",
               fontSize: '1.5rem',
-              fontWeight: 300,
+              fontWeight: 700,
               textAlign: 'center',
               marginBottom: '2rem',
               color: '#374151',
-              letterSpacing: '0.025em'
+              letterSpacing: '0.05em'
             }}>{config.greeting.title}</h2>
             <div style={{ 
               display: 'flex',
@@ -564,12 +597,13 @@ END:VCALENDAR`;
             transition={{ duration: 0.6 }}
           >
             <h2 style={{
+              fontFamily: "'Nanum Myeongjo', 'MaruBuri', serif",
               fontSize: '1.5rem',
-              fontWeight: 300,
+              fontWeight: 700,
               textAlign: 'center',
               marginBottom: '2rem',
               color: '#374151',
-              letterSpacing: '0.025em'
+              letterSpacing: '0.05em'
             }}>우리의 이야기</h2>
             <div style={{
               display: 'flex',
@@ -649,12 +683,13 @@ END:VCALENDAR`;
       <section id="gallery" className="py-16">
         <div className="container">
           <h2 style={{
+            fontFamily: "'Nanum Myeongjo', 'MaruBuri', serif",
             fontSize: '1.5rem',
-            fontWeight: 300,
+            fontWeight: 700,
             textAlign: 'center',
             marginBottom: '2rem',
             color: '#374151',
-            letterSpacing: '0.025em'
+            letterSpacing: '0.05em'
           }}>갤러리</h2>
           <div style={{
             backdropFilter: 'blur(24px)',
@@ -822,12 +857,13 @@ END:VCALENDAR`;
             transition={{ duration: 0.6 }}
           >
             <h2 style={{
+              fontFamily: "'Nanum Myeongjo', 'MaruBuri', serif",
               fontSize: '1.5rem',
-              fontWeight: 300,
+              fontWeight: 700,
               textAlign: 'center',
               marginBottom: '2rem',
               color: '#374151',
-              letterSpacing: '0.025em'
+              letterSpacing: '0.05em'
             }}>오시는 길</h2>
             <div style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#4b5563' }}>
               <p style={{ fontSize: '1rem', fontWeight: 300, marginBottom: '0.5rem' }}>{config.venue.name}</p>
@@ -982,7 +1018,8 @@ END:VCALENDAR`;
         </div>
       </section>
 
-      {/* D-Day 카운터 Section */}
+      {/* D-Day 카운터 Section - 임시 주석 처리 */}
+      {/*
       <section id="dday" className="py-16">
         <div className="container">
           <motion.div
@@ -1050,8 +1087,10 @@ END:VCALENDAR`;
           </motion.div>
         </div>
       </section>
+      */}
 
-      {/* 캘린더 추가 Section */}
+      {/* 캘린더 추가 Section - 임시 주석 처리 */}
+      {/*
       <section id="calendar" className="py-16">
         <div className="container">
           <motion.div
@@ -1086,7 +1125,6 @@ END:VCALENDAR`;
               결혼식 일정을 캘린더에 추가하시겠어요?
             </p>
 
-            {/* 캘린더 탭 */}
             <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -1123,7 +1161,6 @@ END:VCALENDAR`;
               ))}
             </div>
 
-            {/* 캘린더 추가 버튼 */}
             <a
               href={
                 activeCalendarTab === 'google' 
@@ -1177,17 +1214,19 @@ END:VCALENDAR`;
           </motion.div>
         </div>
       </section>
+      */}
 
       {/* 계좌번호 Section */}
       <section id="account" className="py-16">
         <div className="container">
           <h2 style={{
+            fontFamily: "'Nanum Myeongjo', 'MaruBuri', serif",
             fontSize: '1.5rem',
-            fontWeight: 300,
+            fontWeight: 700,
             textAlign: 'center',
             marginBottom: '2rem',
             color: '#374151',
-            letterSpacing: '0.025em'
+            letterSpacing: '0.05em'
           }}>마음 전하실 곳</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {/* 신랑측 계좌 */}

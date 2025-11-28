@@ -47,7 +47,7 @@ export const config = {
   // ===== 히어로 배경 이미지 설정 =====
   hero: {
     backgroundImage: '/bg.jpg',  // 배경 이미지 경로 (public 폴더)
-    backgroundOpacity: 0.2,           // 배경 이미지 투명도 (0.0 ~ 1.0)
+    backgroundOpacity: 0.5,           // 배경 이미지 투명도 (0.0 ~ 1.0) - 0.5가 적당
     useBackgroundImage: true,         // 배경 이미지 사용 여부
   },
 
