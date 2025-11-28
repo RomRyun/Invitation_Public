@@ -17,8 +17,29 @@ function App() {
   const [modalImageIndex, setModalImageIndex] = useState(0);
   const [activeMapTab, setActiveMapTab] = useState('naver');
   const [activeCalendarTab, setActiveCalendarTab] = useState('google');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const touchStartTime = useRef(0);
   const touchMoved = useRef(false);
+
+  // 목차 데이터
+  const menuItems = [
+    { id: 'greeting', label: '인사말' },
+    { id: 'story', label: '우리의 이야기' },
+    { id: 'gallery', label: '갤러리' },
+    { id: 'location', label: '오시는 길' },
+    { id: 'dday', label: 'D-Day' },
+    { id: 'calendar', label: '캘린더' },
+    { id: 'account', label: '마음 전하실 곳' },
+  ];
+
+  // 메뉴 아이템 클릭 시 스크롤
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setIsMenuOpen(false);
+    }
+  };
 
   // D-Day 카운터
   useEffect(() => {
@@ -460,7 +481,7 @@ END:VCALENDAR`;
       </section>
 
       {/* 인사말 Section */}
-      <section className="py-16">
+      <section id="greeting" className="py-16">
         <div className="container">
           <motion.div
             style={{
@@ -524,7 +545,7 @@ END:VCALENDAR`;
       </section>
 
       {/* 픽셀아트 Section */}
-      <section className="py-16">
+      <section id="story" className="py-16">
         <div className="container">
           <motion.div
             style={{
@@ -625,7 +646,7 @@ END:VCALENDAR`;
       </section>
 
       {/* 갤러리 Section */}
-      <section className="py-16">
+      <section id="gallery" className="py-16">
         <div className="container">
           <h2 style={{
             fontSize: '1.5rem',
@@ -783,7 +804,7 @@ END:VCALENDAR`;
       </section>
 
       {/* 오시는 길 Section */}
-      <section className="py-16">
+      <section id="location" className="py-16">
         <div className="container">
           <motion.div
             style={{
@@ -962,7 +983,7 @@ END:VCALENDAR`;
       </section>
 
       {/* D-Day 카운터 Section */}
-      <section className="py-16">
+      <section id="dday" className="py-16">
         <div className="container">
           <motion.div
             style={{
@@ -1030,8 +1051,135 @@ END:VCALENDAR`;
         </div>
       </section>
 
+      {/* 캘린더 추가 Section */}
+      <section id="calendar" className="py-16">
+        <div className="container">
+          <motion.div
+            style={{
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              backgroundColor: 'rgba(255, 255, 255, 0.6)',
+              borderRadius: '1rem',
+              padding: '2rem',
+              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.8)',
+              textAlign: 'center'
+            }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: 300,
+              marginBottom: '1.5rem',
+              color: '#374151',
+              letterSpacing: '0.025em'
+            }}>캘린더에 추가</h2>
+            <p style={{
+              color: '#4b5563',
+              marginBottom: '1.5rem',
+              fontSize: '0.875rem',
+              fontWeight: 300
+            }}>
+              결혼식 일정을 캘린더에 추가하시겠어요?
+            </p>
+
+            {/* 캘린더 탭 */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '0.25rem',
+              marginBottom: '1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              borderRadius: '0.75rem',
+              padding: '0.25rem'
+            }}>
+              {[
+                { id: 'google', label: 'Google' },
+                { id: 'apple', label: 'Apple' },
+                { id: 'android', label: 'Android' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveCalendarTab(tab.id)}
+                  style={{
+                    flex: 1,
+                    padding: '0.625rem 0.5rem',
+                    borderRadius: '0.5rem',
+                    border: 'none',
+                    backgroundColor: activeCalendarTab === tab.id ? 'white' : 'transparent',
+                    color: activeCalendarTab === tab.id ? '#374151' : '#6b7280',
+                    fontSize: '0.8125rem',
+                    fontWeight: activeCalendarTab === tab.id ? 500 : 300,
+                    cursor: 'pointer',
+                    transition: 'all 200ms',
+                    boxShadow: activeCalendarTab === tab.id ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 캘린더 추가 버튼 */}
+            <a
+              href={
+                activeCalendarTab === 'google' 
+                  ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${config.groom.name} & ${config.bride.name} 결혼식`)}&dates=${config.wedding.date.replace(/-/g, '')}T${config.wedding.time.replace(':', '')}00/${config.wedding.date.replace(/-/g, '')}T${String(parseInt(config.wedding.time.split(':')[0]) + 2).padStart(2, '0')}0000&details=${encodeURIComponent(`${config.venue.name}에서 열리는 결혼식에 초대합니다.`)}&location=${encodeURIComponent(config.venue.address)}`
+                  : undefined
+              }
+              onClick={(e) => {
+                if (activeCalendarTab !== 'google') {
+                  e.preventDefault();
+                  downloadICS();
+                }
+              }}
+              target={activeCalendarTab === 'google' ? '_blank' : undefined}
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+                backgroundColor: 
+                  activeCalendarTab === 'google' ? 'rgba(66, 133, 244, 0.15)' :
+                  activeCalendarTab === 'apple' ? 'rgba(0, 0, 0, 0.08)' :
+                  'rgba(61, 220, 132, 0.15)',
+                borderRadius: '0.75rem',
+                padding: '0.75rem 1.5rem',
+                color: 
+                  activeCalendarTab === 'google' ? '#4285F4' :
+                  activeCalendarTab === 'apple' ? '#1d1d1f' :
+                  '#3DDC84',
+                fontSize: '0.875rem',
+                fontWeight: 400,
+                textDecoration: 'none',
+                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
+                transition: 'all 300ms',
+                cursor: 'pointer',
+                border: `1px solid ${
+                  activeCalendarTab === 'google' ? 'rgba(66, 133, 244, 0.3)' :
+                  activeCalendarTab === 'apple' ? 'rgba(0, 0, 0, 0.15)' :
+                  'rgba(61, 220, 132, 0.3)'
+                }`
+              }}
+            >
+              <svg style={{ width: '1.125rem', height: '1.125rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {activeCalendarTab === 'google' ? 'Google 캘린더' : 
+               activeCalendarTab === 'apple' ? 'Apple 캘린더' : 'Android 캘린더'}에 추가
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
       {/* 계좌번호 Section */}
-      <section className="py-16">
+      <section id="account" className="py-16">
         <div className="container">
           <h2 style={{
             fontSize: '1.5rem',
@@ -1167,133 +1315,6 @@ END:VCALENDAR`;
         </div>
       </section>
 
-      {/* 캘린더 추가 Section */}
-      <section className="py-16">
-        <div className="container">
-          <motion.div
-            style={{
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-              borderRadius: '1rem',
-              padding: '2rem',
-              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.8)',
-              textAlign: 'center'
-            }}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 style={{
-              fontSize: '1.5rem',
-              fontWeight: 300,
-              marginBottom: '1.5rem',
-              color: '#374151',
-              letterSpacing: '0.025em'
-            }}>캘린더에 추가</h2>
-            <p style={{
-              color: '#4b5563',
-              marginBottom: '1.5rem',
-              fontSize: '0.875rem',
-              fontWeight: 300
-            }}>
-              결혼식 일정을 캘린더에 추가하시겠어요?
-            </p>
-
-            {/* 캘린더 탭 */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '0.25rem',
-              marginBottom: '1rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.5)',
-              borderRadius: '0.75rem',
-              padding: '0.25rem'
-            }}>
-              {[
-                { id: 'google', label: 'Google' },
-                { id: 'apple', label: 'Apple' },
-                { id: 'android', label: 'Android' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveCalendarTab(tab.id)}
-                  style={{
-                    flex: 1,
-                    padding: '0.625rem 0.5rem',
-                    borderRadius: '0.5rem',
-                    border: 'none',
-                    backgroundColor: activeCalendarTab === tab.id ? 'white' : 'transparent',
-                    color: activeCalendarTab === tab.id ? '#374151' : '#6b7280',
-                    fontSize: '0.8125rem',
-                    fontWeight: activeCalendarTab === tab.id ? 500 : 300,
-                    cursor: 'pointer',
-                    transition: 'all 200ms',
-                    boxShadow: activeCalendarTab === tab.id ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* 캘린더 추가 버튼 */}
-            <a
-              href={
-                activeCalendarTab === 'google' 
-                  ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${config.groom.name} & ${config.bride.name} 결혼식`)}&dates=${config.wedding.date.replace(/-/g, '')}T${config.wedding.time.replace(':', '')}00/${config.wedding.date.replace(/-/g, '')}T${String(parseInt(config.wedding.time.split(':')[0]) + 2).padStart(2, '0')}0000&details=${encodeURIComponent(`${config.venue.name}에서 열리는 결혼식에 초대합니다.`)}&location=${encodeURIComponent(config.venue.address)}`
-                  : undefined
-              }
-              onClick={(e) => {
-                if (activeCalendarTab !== 'google') {
-                  e.preventDefault();
-                  downloadICS();
-                }
-              }}
-              target={activeCalendarTab === 'google' ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                backdropFilter: 'blur(4px)',
-                WebkitBackdropFilter: 'blur(4px)',
-                backgroundColor: 
-                  activeCalendarTab === 'google' ? 'rgba(66, 133, 244, 0.15)' :
-                  activeCalendarTab === 'apple' ? 'rgba(0, 0, 0, 0.08)' :
-                  'rgba(61, 220, 132, 0.15)',
-                borderRadius: '0.75rem',
-                padding: '0.75rem 1.5rem',
-                color: 
-                  activeCalendarTab === 'google' ? '#4285F4' :
-                  activeCalendarTab === 'apple' ? '#1d1d1f' :
-                  '#3DDC84',
-                fontSize: '0.875rem',
-                fontWeight: 400,
-                textDecoration: 'none',
-                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
-                transition: 'all 300ms',
-                cursor: 'pointer',
-                border: `1px solid ${
-                  activeCalendarTab === 'google' ? 'rgba(66, 133, 244, 0.3)' :
-                  activeCalendarTab === 'apple' ? 'rgba(0, 0, 0, 0.15)' :
-                  'rgba(61, 220, 132, 0.3)'
-                }`
-              }}
-            >
-              <svg style={{ width: '1.125rem', height: '1.125rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {activeCalendarTab === 'google' ? 'Google 캘린더' : 
-               activeCalendarTab === 'apple' ? 'Apple 캘린더' : 'Android 캘린더'}에 추가
-            </a>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer style={{ padding: '3rem 1rem', textAlign: 'center', color: '#6b7280' }}>
         <div className="container">
@@ -1303,6 +1324,124 @@ END:VCALENDAR`;
           <p style={{ fontSize: '0.75rem', fontWeight: 300 }}>{config.wedding.devRepository}</p>
         </div>
       </footer>
+
+      {/* 플로팅 목차 버튼 */}
+      <div style={{
+        position: 'fixed',
+        bottom: '1.5rem',
+        right: '1.5rem',
+        zIndex: 1000
+      }}>
+        {/* 메뉴 패널 */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'absolute',
+                bottom: '4rem',
+                right: 0,
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderRadius: '1rem',
+                padding: '0.75rem 0',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                border: '1px solid rgba(255, 255, 255, 0.8)',
+                minWidth: '160px',
+                overflow: 'hidden'
+              }}
+            >
+              {menuItems.map((item, idx) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '0.625rem 1.25rem',
+                    textAlign: 'left',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: '#374151',
+                    fontSize: '0.875rem',
+                    fontWeight: 300,
+                    cursor: 'pointer',
+                    transition: 'background-color 150ms'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.05)'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                  <span style={{ 
+                    color: theme.accentSolid, 
+                    marginRight: '0.5rem',
+                    fontSize: '0.75rem'
+                  }}>{idx + 1}.</span>
+                  {item.label}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 토글 버튼 */}
+        <motion.button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          style={{
+            width: '3rem',
+            height: '3rem',
+            borderRadius: '50%',
+            backgroundColor: theme.accentSolid,
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+            color: 'white'
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <AnimatePresence mode="wait">
+            {isMenuOpen ? (
+              <motion.svg
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                style={{ width: '1.25rem', height: '1.25rem' }}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </motion.svg>
+            ) : (
+              <motion.div
+                key="dots"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '3px'
+                }}
+              >
+                <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'white' }} />
+                <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'white' }} />
+                <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'white' }} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      </div>
     </div>
   );
 }
