@@ -8,6 +8,44 @@
   font-style: normal;
 }
 
+/* 카페24 숙숙 - 두껍고 자유로운 붓글씨 */
+@font-face {
+  font-family: 'Cafe24Ssukssuk';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssukssuk.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 카페24 당당해 - 두껍고 임팩트 */
+@font-face {
+  font-family: 'Cafe24Dangdanghae';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Dangdanghae.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 나눔손글씨 붓 - 전통 붓글씨 */
+@font-face {
+  font-family: 'NanumBrush';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumBrush.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 태나다 - 자유로운 손글씨 캘리그라피 */
+@font-face {
+  font-family: 'TaeNaDa';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/TAENadaL.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'TaeNaDa';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/TAENadaB.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
 /* 나눔명조 - 클래식 세리프 */
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
 

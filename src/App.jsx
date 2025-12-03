@@ -351,32 +351,34 @@ END:VCALENDAR`;
         >
           <motion.div 
             style={{ 
-              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-              fontSize: '2.75rem', 
-              letterSpacing: '0.3em', 
+              fontFamily: "'Cafe24Ssukssuk', 'NanumBrush', 'Gowun Batang', serif",
+              fontSize: '3.5rem', 
+              letterSpacing: '0.15em', 
               color: theme.accentSolid, 
               fontWeight: 400,
               textAlign: 'center',
-              lineHeight: 1.4
+              lineHeight: 1.3,
+              textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
             }}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >{config.hero.titleLine1}</motion.div>
           {config.hero.titleLine2 && (
             <motion.div 
               style={{ 
-                fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-                fontSize: '2.75rem', 
-                letterSpacing: '0.3em', 
+                fontFamily: "'Cafe24Ssukssuk', 'NanumBrush', 'Gowun Batang', serif",
+                fontSize: '3.5rem', 
+                letterSpacing: '0.15em', 
                 color: theme.accentSolid, 
                 fontWeight: 400,
                 textAlign: 'center',
-                lineHeight: 1.4
+                lineHeight: 1.3,
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
               }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
             >{config.hero.titleLine2}</motion.div>
           )}
         </motion.div>

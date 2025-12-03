@@ -99,7 +99,7 @@ export const config = {
     naver: 'https://naver.me/G02HkD4H',
     kakao: 'https://kko.kakao.com/m7wFN3SI-8',
     tmap: 'https://tmap.life/ea42d1f6',
-    image: '/map_image.jpg',
+    image: '/map_image.png',
   },
   transportation: [
     '남부터미널 | 자차 5분 · 대중교통 20분',
