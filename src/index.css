@@ -8,41 +8,39 @@
   font-style: normal;
 }
 
-/* 카페24 숙숙 - 두껍고 자유로운 붓글씨 */
+/* 주아 (Jua) - 둥글고 귀여운 Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+/* 블랙한산스 - 두껍고 강렬한 */
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
+
+/* 여기어때 잘난체 - 두껍고 임팩트 */
 @font-face {
-  font-family: 'Cafe24Ssukssuk';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssukssuk.woff') format('woff');
+  font-family: 'yg-jalnan';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }
 
-/* 카페24 당당해 - 두껍고 임팩트 */
+/* 카페24 모야모야 - 손글씨 느낌 */
 @font-face {
-  font-family: 'Cafe24Dangdanghae';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Dangdanghae.woff') format('woff');
+  font-family: 'Cafe24Moyamoya';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Moyamoya-Face-v1.0.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }
 
-/* 나눔손글씨 붓 - 전통 붓글씨 */
+/* 에스코어드림 - 깔끔하고 모던 */
 @font-face {
-  font-family: 'NanumBrush';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumBrush.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
-/* 태나다 - 자유로운 손글씨 캘리그라피 */
-@font-face {
-  font-family: 'TaeNaDa';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/TAENadaL.woff2') format('woff2');
-  font-weight: 300;
+  font-family: 'SCDream';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+  font-weight: 500;
   font-style: normal;
 }
 @font-face {
-  font-family: 'TaeNaDa';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/TAENadaB.woff2') format('woff2');
-  font-weight: 700;
+  font-family: 'SCDream';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-7ExtraBold.woff') format('woff');
+  font-weight: 800;
   font-style: normal;
 }
 

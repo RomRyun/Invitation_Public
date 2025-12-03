@@ -351,14 +351,13 @@ END:VCALENDAR`;
         >
           <motion.div 
             style={{ 
-              fontFamily: "'Cafe24Ssukssuk', 'NanumBrush', 'Gowun Batang', serif",
-              fontSize: '3.5rem', 
-              letterSpacing: '0.15em', 
+              fontFamily: "'yg-jalnan', 'Black Han Sans', sans-serif",
+              fontSize: '3rem', 
+              letterSpacing: '0.1em', 
               color: theme.accentSolid, 
               fontWeight: 400,
               textAlign: 'center',
-              lineHeight: 1.3,
-              textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+              lineHeight: 1.4
             }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -367,14 +366,13 @@ END:VCALENDAR`;
           {config.hero.titleLine2 && (
             <motion.div 
               style={{ 
-                fontFamily: "'Cafe24Ssukssuk', 'NanumBrush', 'Gowun Batang', serif",
-                fontSize: '3.5rem', 
-                letterSpacing: '0.15em', 
+                fontFamily: "'yg-jalnan', 'Black Han Sans', sans-serif",
+                fontSize: '3rem', 
+                letterSpacing: '0.1em', 
                 color: theme.accentSolid, 
                 fontWeight: 400,
                 textAlign: 'center',
-                lineHeight: 1.3,
-                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+                lineHeight: 1.4
               }}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
