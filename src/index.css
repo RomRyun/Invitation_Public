@@ -22,31 +22,9 @@
   font-style: normal;
 }
 
-/* 마포한아름 - 아름다운 캘리그라피 */
-@font-face {
-  font-family: 'MapoHanArum';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/MapoGoldenPierA.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
+/* ===== 붓 캘리그라피 폰트 ===== */
 
-/* 교보손글씨 2020 박도연 - 감성 손글씨 */
-@font-face {
-  font-family: 'KyoboHand';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/KyoboHandwriting2020pdy.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
-/* 카페24 아네모네 - 부드럽고 예쁜 손글씨 */
-@font-face {
-  font-family: 'Cafe24Ohsquare';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/Cafe24Ohsquare.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-}
-
-/* 나눔손글씨 붓 - 붓 캘리그라피 */
+/* 나눔손글씨 붓 - 진짜 붓글씨 느낌 */
 @font-face {
   font-family: 'NanumBrush';
   src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumBrush.woff') format('woff');
@@ -54,18 +32,50 @@
   font-style: normal;
 }
 
-/* 학교안심 둥근미소 - 귀여운 둥근 손글씨 */
+/* 한겨레결체 - 예술적 캘리그라피 */
 @font-face {
-  font-family: 'HakgyoansimDunggeunmisoTTF';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-R.woff2') format('woff2');
+  font-family: 'HangeulNuri';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.0/HangeulNuri-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 마포애민선체 - 자유로운 붓글씨 */
+@font-face {
+  font-family: 'MapoAemin';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/MapoAgape.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }
 
-/* 온글잎 박채령체 - 아름다운 캘리 */
+/* 서울남산 장체 - 서울시 공식 캘리 */
 @font-face {
-  font-family: 'Ownglyph_ParkChaeYun';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkChaeYun-Rg.woff2') format('woff2');
+  font-family: 'SeoulNamsanB';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/SeoulNamsanB.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 성동구체 - 힙한 캘리그라피 */
+@font-face {
+  font-family: 'SDSamliphopangche';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/SDSamliphopangche_Outline.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 배달의민족 기랑해랑 - 아트 캘리그라피 */
+@font-face {
+  font-family: 'BMKiranghaerang';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMKiranghaerang.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 순천체 - 붓터치 캘리 */
+@font-face {
+  font-family: 'Suncheon';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/Suncheon.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
 }
