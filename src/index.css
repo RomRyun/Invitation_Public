@@ -9,6 +9,15 @@
   font-display: swap;
 }
 
+/* 교보손글씨 2021 성지영 - 기본 본문용 손글씨 */
+@font-face {
+  font-family: 'KyoboHandwriting2021sjy';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2212@1.0/KyoboHandwriting2021sjy.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 마포꽃섬 - 부드럽고 우아한 한글 */
 @font-face {
   font-family: 'MapoFlowerIsland';
@@ -151,6 +160,7 @@ body {
   min-width: 320px;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  font-family: 'KyoboHandwriting2021sjy', 'Gowun Dodum', 'Pretendard', sans-serif;
 }
 
 html {
