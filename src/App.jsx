@@ -343,7 +343,7 @@ END:VCALENDAR`;
           style={{
             position: 'relative',
             zIndex: 10,
-            paddingTop: '2.5rem',
+            paddingTop: '3rem',
             paddingLeft: '1.5rem',
             paddingRight: '1.5rem',
             width: '100%',
@@ -354,36 +354,96 @@ END:VCALENDAR`;
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
+          {/* 상단 장식 라인 */}
+          <motion.div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '1rem',
+              marginBottom: '0.75rem'
+            }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+          >
+            <div style={{ 
+              width: '50px', 
+              height: '1px', 
+              background: `linear-gradient(to right, transparent, ${theme.accentSolid})` 
+            }}></div>
+            <span style={{ 
+              fontSize: '0.7rem', 
+              color: theme.accentSolid, 
+              letterSpacing: '0.25em',
+              fontFamily: "'Cormorant Garamond', serif",
+              fontStyle: 'italic',
+              fontWeight: 500
+            }}>WEDDING</span>
+            <div style={{ 
+              width: '50px', 
+              height: '1px', 
+              background: `linear-gradient(to left, transparent, ${theme.accentSolid})` 
+            }}></div>
+          </motion.div>
+
+          {/* 메인 타이틀 */}
           <motion.div 
             style={{ 
-              fontFamily: "'HakgyoansimPuzzle', 'BMKiranghaerang', sans-serif",
-              fontSize: '3.5rem', 
-              letterSpacing: '0.05em', 
+              fontFamily: "'NanumBrush', 'Suncheon', cursive",
+              fontSize: '4.5rem', 
+              letterSpacing: '0.1em', 
               color: theme.accentSolid, 
-              fontWeight: 900,
+              fontWeight: 400,
               textAlign: 'center',
-              lineHeight: 1.3
+              lineHeight: 1.15,
+              textShadow: '3px 3px 6px rgba(0,0,0,0.08)',
+              position: 'relative'
             }}
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            {config.hero.titleLine1}
+            {config.hero.titleLine2 && (
+              <motion.span
+                style={{ display: 'block' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >{config.hero.titleLine2}</motion.span>
+            )}
+          </motion.div>
+
+          {/* 하단 장식 꽃 */}
+          <motion.div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              marginTop: '0.75rem'
+            }}
+            initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >{config.hero.titleLine1}</motion.div>
-          {config.hero.titleLine2 && (
-            <motion.div 
-              style={{ 
-                fontFamily: "'HakgyoansimPuzzle', 'BMKiranghaerang', sans-serif",
-                fontSize: '3.5rem', 
-                letterSpacing: '0.05em', 
-                color: theme.accentSolid, 
-                fontWeight: 900,
-                textAlign: 'center',
-                lineHeight: 1.3
-              }}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-            >{config.hero.titleLine2}</motion.div>
-          )}
+            transition={{ duration: 0.8, delay: 0.7 }}
+          >
+            <span style={{ color: theme.accentSolid, fontSize: '0.875rem', opacity: 0.7 }}>❀</span>
+            <div style={{ 
+              width: '30px', 
+              height: '1px', 
+              background: theme.accentSolid,
+              opacity: 0.4
+            }}></div>
+            <span style={{ color: theme.accentSolid, fontSize: '1rem' }}>✿</span>
+            <div style={{ 
+              width: '30px', 
+              height: '1px', 
+              background: theme.accentSolid,
+              opacity: 0.4
+            }}></div>
+            <span style={{ color: theme.accentSolid, fontSize: '0.875rem', opacity: 0.7 }}>❀</span>
+          </motion.div>
         </motion.div>
 
         {/* 중앙: 신랑 신부 이름 + 날짜 */}
