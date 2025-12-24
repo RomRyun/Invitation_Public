@@ -51,13 +51,8 @@ function App() {
   // 텍스트 위치
   const textY = useTransform(heroProgress, [0.5, 0.7], [0, -15]);
 
-  // 목차 데이터
-  const menuItems = [
-    { id: 'greeting', label: '인사말' },
-    { id: 'gallery', label: '갤러리' },
-    { id: 'location', label: '오시는 길' },
-    { id: 'account', label: '마음 전하실 곳' },
-  ];
+  // 목차 데이터 (config에서 가져옴)
+  const menuItems = config.menu;
 
   // 메뉴 아이템 클릭 시 스크롤
   const scrollToSection = (id) => {
@@ -224,17 +219,13 @@ END:VCALENDAR`;
     link.click();
   };
 
-  // 지도 탭 데이터
-  const mapTabs = [
-    { id: 'naver', label: '네이버 지도', color: '#03C75A' },
-    { id: 'kakao', label: '카카오맵', color: '#FEE500' },
-    { id: 'tmap', label: 'T맵', color: '#E4002B' },
-  ];
+  // 지도 탭 데이터 (config에서 가져옴)
+  const mapTabs = config.location.mapTabs;
 
   return (
     <div style={{ 
       minHeight: '100vh', 
-      backgroundColor: '#E5E1D8'
+      backgroundColor: theme.bgColor
     }}>
       {/* 이미지 확대 모달 */}
       <AnimatePresence>
@@ -412,7 +403,7 @@ END:VCALENDAR`;
               transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
             >
               <span style={{
-                fontFamily: "'La Paloma', 'Great Vibes', cursive",
+                fontFamily: config.hero.nameEn1Font,
                 fontSize: config.hero.nameEn1Size,
                 fontWeight: 400,
                 letterSpacing: '0.02em',
@@ -423,7 +414,7 @@ END:VCALENDAR`;
                 {config.hero.nameEn1}
               </span>
               <span style={{
-                fontFamily: "'La Paloma', 'Great Vibes', cursive",
+                fontFamily: config.hero.ampersandFont,
                 fontSize: config.hero.ampersandSize,
                 fontWeight: 400,
                 textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)',
@@ -432,7 +423,7 @@ END:VCALENDAR`;
                 {config.hero.ampersand}
               </span>
               <span style={{
-                fontFamily: "'La Paloma', 'Great Vibes', cursive",
+                fontFamily: config.hero.nameEn2Font,
                 fontSize: config.hero.nameEn2Size,
                 fontWeight: 400,
                 letterSpacing: '0.02em',
@@ -447,7 +438,7 @@ END:VCALENDAR`;
             {/* 한글 초대 문구 */}
             <motion.p
               style={{
-                fontFamily: "'NanumMinkyung', 'Pretendard', sans-serif",
+                fontFamily: config.hero.inviteTextFont,
                 fontSize: config.hero.inviteTextSize,
                 fontWeight: 400,
                 letterSpacing: '0.08em',
@@ -464,7 +455,7 @@ END:VCALENDAR`;
             {/* 날짜 */}
             <motion.div
               style={{
-                fontFamily: "'NanumMinkyung', 'Pretendard', sans-serif",
+                fontFamily: config.hero.dateDisplayFont,
                 fontSize: config.hero.dateDisplaySize,
                 fontWeight: 400,
                 letterSpacing: '0.05em',
@@ -481,7 +472,7 @@ END:VCALENDAR`;
             {/* 장소 */}
             <motion.p
               style={{
-                fontFamily: "'NanumMinkyung', 'Pretendard', sans-serif",
+                fontFamily: config.hero.venueShortFont,
                 fontSize: config.hero.venueShortSize,
                 fontWeight: 400,
                 letterSpacing: '0.03em',
@@ -521,7 +512,7 @@ END:VCALENDAR`;
               fontWeight: 400,
               textShadow: '0 1px 4px rgba(0,0,0,0.3)'
             }}>
-              SCROLL
+              {config.hero.scrollText}
             </span>
             <motion.div
               animate={{ y: [0, 5, 0] }}
@@ -589,8 +580,8 @@ END:VCALENDAR`;
             {/* 섹션 타이틀 */}
             <motion.h2 
               style={{
-                fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-                fontSize: '1.5rem',
+                fontFamily: config.greeting.titleFont,
+                fontSize: config.greeting.titleSize,
                 fontWeight: 400,
                 textAlign: 'center',
                 marginBottom: '1.5rem',
@@ -612,7 +603,7 @@ END:VCALENDAR`;
               gap: '1rem',
               color: '#4b5563',
               lineHeight: 1.8,
-              fontSize: '0.9375rem',
+              fontSize: config.greeting.messageSize,
               textAlign: 'center'
             }}>
               <div style={{ fontWeight: 300 }}>
@@ -701,8 +692,8 @@ END:VCALENDAR`;
           {/* 섹션 타이틀 */}
           <motion.h2 
             style={{
-              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-              fontSize: '1.5rem',
+              fontFamily: config.gallery.titleFont,
+              fontSize: config.gallery.titleSize,
               fontWeight: 400,
               textAlign: 'center',
               marginBottom: '2rem',
@@ -833,7 +824,7 @@ END:VCALENDAR`;
                 borderRadius: '9999px',
                 pointerEvents: 'none'
               }}>
-                터치하여 확대
+                {config.gallery.touchHint}
               </div>
 
               {/* 좌우 화살표 */}
@@ -963,8 +954,8 @@ END:VCALENDAR`;
             {/* 섹션 타이틀 */}
             <motion.h2 
               style={{
-                fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-                fontSize: '1.5rem',
+                fontFamily: config.location.titleFont,
+                fontSize: config.location.titleSize,
                 fontWeight: 400,
                 textAlign: 'center',
                 marginBottom: '2rem',
@@ -1023,7 +1014,7 @@ END:VCALENDAR`;
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.6 }}
               >
-                <p style={{ marginBottom: '0.75rem', fontWeight: 400 }}>주소</p>
+                <p style={{ marginBottom: '0.75rem', fontWeight: 400 }}>{config.location.addressLabel}</p>
                 <p style={{ lineHeight: 1.625 }}>
                   {config.location.venue.address}<br />
                   {config.location.venue.addressDetail && (
@@ -1134,50 +1125,41 @@ END:VCALENDAR`;
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.7 }}
             >
-              <motion.a
-                href={
-                  activeMapTab === 'naver' ? config.location.maps.naver :
-                  activeMapTab === 'kakao' ? config.location.maps.kakao :
-                  config.location.maps.tmap
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                  backgroundColor: 
-                    activeMapTab === 'naver' ? 'rgba(3, 199, 90, 0.15)' :
-                    activeMapTab === 'kakao' ? 'rgba(254, 229, 0, 0.2)' :
-                    'rgba(228, 0, 43, 0.15)',
-                  borderRadius: '0.75rem',
-                  padding: '0.75rem 1.5rem',
-                  color: 
-                    activeMapTab === 'naver' ? '#03C75A' :
-                    activeMapTab === 'kakao' ? '#3C1E1E' :
-                    '#E4002B',
-                  fontSize: '0.875rem',
-                  fontWeight: 400,
-                  textDecoration: 'none',
-                  boxShadow: '0 2px 8px 0 rgba(0,0,0,0.1)',
-                  cursor: 'pointer',
-                  border: `1px solid ${
-                    activeMapTab === 'naver' ? 'rgba(3, 199, 90, 0.3)' :
-                    activeMapTab === 'kakao' ? 'rgba(254, 229, 0, 0.5)' :
-                    'rgba(228, 0, 43, 0.3)'
-                  }`
-                }}
-                whileHover={{ scale: 1.03, boxShadow: '0 4px 12px 0 rgba(0,0,0,0.15)' }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ duration: 0.2 }}
-              >
-                <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-                {activeMapTab === 'naver' ? '네이버 지도' : activeMapTab === 'kakao' ? '카카오맵' : 'T맵'}에서 열기
-              </motion.a>
+              {(() => {
+                const currentTab = mapTabs.find(t => t.id === activeMapTab);
+                return (
+                  <motion.a
+                    href={config.location.maps[activeMapTab]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      backdropFilter: 'blur(4px)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                      backgroundColor: currentTab?.bgColor,
+                      borderRadius: '0.75rem',
+                      padding: '0.75rem 1.5rem',
+                      color: currentTab?.color,
+                      fontSize: '0.875rem',
+                      fontWeight: 400,
+                      textDecoration: 'none',
+                      boxShadow: '0 2px 8px 0 rgba(0,0,0,0.1)',
+                      cursor: 'pointer',
+                      border: `1px solid ${currentTab?.borderColor}`
+                    }}
+                    whileHover={{ scale: 1.03, boxShadow: '0 4px 12px 0 rgba(0,0,0,0.15)' }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    {currentTab?.openText}
+                  </motion.a>
+                );
+              })()}
             </motion.div>
 
             {/* 교통편 정보 - 순차 등장 */}
@@ -1195,7 +1177,7 @@ END:VCALENDAR`;
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.9 }}
               >
-                교통편
+                {config.location.transportLabel}
               </motion.p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textAlign: 'center' }}>
                 {config.location.transportation.map((item, index) => (
@@ -1232,8 +1214,8 @@ END:VCALENDAR`;
           {/* 섹션 타이틀 */}
           <motion.h2 
             style={{
-              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-              fontSize: '1.5rem',
+              fontFamily: config.account.titleFont,
+              fontSize: config.account.titleSize,
               fontWeight: 400,
               textAlign: 'center',
               marginBottom: '1.5rem',
@@ -1284,13 +1266,13 @@ END:VCALENDAR`;
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.3 }}
               >
-                신랑측
+                {config.account.groomSideLabel}
               </motion.p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                 {[
-                  { key: 'groom', label: config.groom.name, role: '신랑', account: config.account.groom },
-                  { key: 'groomFather', label: config.groom.fatherName, role: '아버지', account: config.account.groomFather },
-                  { key: 'groomMother', label: config.groom.motherName, role: '어머니', account: config.account.groomMother },
+                  { key: 'groom', label: config.groom.name, role: config.account.roles.groom, account: config.account.groom },
+                  { key: 'groomFather', label: config.groom.fatherName, role: config.account.roles.father, account: config.account.groomFather },
+                  { key: 'groomMother', label: config.groom.motherName, role: config.account.roles.mother, account: config.account.groomMother },
                 ].filter(item => item.account?.bank).map((item, idx) => (
                   <motion.button
                     key={item.key}
@@ -1355,13 +1337,13 @@ END:VCALENDAR`;
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.6 }}
               >
-                신부측
+                {config.account.brideSideLabel}
               </motion.p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                 {[
-                  { key: 'bride', label: config.bride.name, role: '신부', account: config.account.bride },
-                  { key: 'brideFather', label: config.bride.fatherName, role: '아버지', account: config.account.brideFather },
-                  { key: 'brideMother', label: config.bride.motherName, role: '어머니', account: config.account.brideMother },
+                  { key: 'bride', label: config.bride.name, role: config.account.roles.bride, account: config.account.bride },
+                  { key: 'brideFather', label: config.bride.fatherName, role: config.account.roles.father, account: config.account.brideFather },
+                  { key: 'brideMother', label: config.bride.motherName, role: config.account.roles.mother, account: config.account.brideMother },
                 ].filter(item => item.account?.bank).map((item, idx) => (
                   <motion.button
                     key={item.key}
@@ -1408,12 +1390,12 @@ END:VCALENDAR`;
                 >
                   {(() => {
                     const allAccounts = [
-                      { key: 'groom', label: config.groom.name, role: '신랑', account: config.account.groom },
-                      { key: 'groomFather', label: config.groom.fatherName, role: '아버지', account: config.account.groomFather },
-                      { key: 'groomMother', label: config.groom.motherName, role: '어머니', account: config.account.groomMother },
-                      { key: 'bride', label: config.bride.name, role: '신부', account: config.account.bride },
-                      { key: 'brideFather', label: config.bride.fatherName, role: '아버지', account: config.account.brideFather },
-                      { key: 'brideMother', label: config.bride.motherName, role: '어머니', account: config.account.brideMother },
+                      { key: 'groom', label: config.groom.name, role: config.account.roles.groom, account: config.account.groom },
+                      { key: 'groomFather', label: config.groom.fatherName, role: config.account.roles.father, account: config.account.groomFather },
+                      { key: 'groomMother', label: config.groom.motherName, role: config.account.roles.mother, account: config.account.groomMother },
+                      { key: 'bride', label: config.bride.name, role: config.account.roles.bride, account: config.account.bride },
+                      { key: 'brideFather', label: config.bride.fatherName, role: config.account.roles.father, account: config.account.brideFather },
+                      { key: 'brideMother', label: config.bride.motherName, role: config.account.roles.mother, account: config.account.brideMother },
                     ];
                     const selected = allAccounts.find(a => a.key === expandedAccount);
                     if (!selected) return null;
@@ -1432,7 +1414,7 @@ END:VCALENDAR`;
                         <p style={{ fontSize: '1.0625rem', color: '#1f2937', fontWeight: 600, marginBottom: '0.25rem', letterSpacing: '0.05em' }}>
                           {selected.account.accountNumber}
                         </p>
-                        <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '1rem' }}>예금주: {selected.account.holder}</p>
+                        <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '1rem' }}>{config.account.holderLabel}: {selected.account.holder}</p>
                         <button
                           onClick={() => copyToClipboard(`${selected.account.bank} ${selected.account.accountNumber} ${selected.account.holder}`, selected.key)}
                           style={{
@@ -1447,7 +1429,7 @@ END:VCALENDAR`;
                             cursor: 'pointer'
                           }}
                         >
-                          {copied[expandedAccount] ? '✓ 복사 완료!' : '계좌번호 복사하기'}
+                          {copied[expandedAccount] ? config.account.copyComplete : config.account.copyButton}
                         </button>
                       </div>
                     );
