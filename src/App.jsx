@@ -603,7 +603,11 @@ END:VCALENDAR`;
                       ease: "easeOut"
                     }}
                   >
-                    <strong style={{ fontWeight: 600 }}>{line.first}</strong>{line.rest}
+                    <span style={{ 
+                      fontWeight: 700, 
+                      color: theme.accentSolid,
+                      fontSize: '1.1em'
+                    }}>{line.first}</span>{line.rest}
                   </motion.p>
                 ))}
               </div>
@@ -623,7 +627,11 @@ END:VCALENDAR`;
                       ease: "easeOut"
                     }}
                   >
-                    <strong style={{ fontWeight: 600 }}>{line.first}</strong>{line.rest}
+                    <span style={{ 
+                      fontWeight: 700, 
+                      color: theme.accentSolid,
+                      fontSize: '1.1em'
+                    }}>{line.first}</span>{line.rest}
                   </motion.p>
                 ))}
               </div>
