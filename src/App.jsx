@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { config, colorPalettes } from './config';
 import './App.css';
 
@@ -25,6 +25,32 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const touchStartTime = useRef(0);
   const touchMoved = useRef(false);
+  
+  // Hero Section Parallax용 ref와 scroll 값
+  const heroRef = useRef(null);
+  const { scrollYProgress: heroScrollProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  
+  // Parallax transforms
+  const heroY = useTransform(heroScrollProgress, [0, 1], [0, 150]);
+  const heroOpacity = useTransform(heroScrollProgress, [0, 0.8], [1, 0]);
+  const heroScale = useTransform(heroScrollProgress, [0, 1], [1, 1.1]);
+  const titleY = useTransform(heroScrollProgress, [0, 1], [0, -50]);
+  const contentY = useTransform(heroScrollProgress, [0, 1], [0, 100]);
+  
+  // 갤러리 Section scroll-linked zoom
+  const galleryRef = useRef(null);
+  const { scrollYProgress: galleryScrollProgress } = useScroll({
+    target: galleryRef,
+    offset: ["start end", "end start"]
+  });
+  
+  // 갤러리 이미지가 스크롤에 따라 확대되는 효과
+  const galleryScale = useTransform(galleryScrollProgress, [0, 0.3, 0.7, 1], [0.85, 1, 1, 0.95]);
+  const galleryOpacity = useTransform(galleryScrollProgress, [0, 0.2, 0.8, 1], [0.6, 1, 1, 0.6]);
+  const galleryY = useTransform(galleryScrollProgress, [0, 0.5, 1], [50, 0, -30]);
 
   // 목차 데이터
   const menuItems = [
@@ -299,22 +325,29 @@ END:VCALENDAR`;
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* 배경 이미지 */}
+      <section 
+        ref={heroRef}
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Parallax 배경 이미지 */}
         {config.hero?.useBackgroundImage && (
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            opacity: config.hero.backgroundOpacity || 0.3
-          }}>
+          <motion.div 
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              opacity: config.hero.backgroundOpacity || 0.3,
+              scale: heroScale,
+              y: heroY
+            }}
+          >
             <div style={{
               width: 'auto',
               height: '100%',
@@ -325,21 +358,23 @@ END:VCALENDAR`;
               backgroundPosition: 'center top',
               backgroundRepeat: 'no-repeat'
             }}></div>
-          </div>
+          </motion.div>
         )}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: theme.bgOverlay
-        }}></div>
+        <motion.div 
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: theme.bgOverlay,
+            opacity: heroOpacity
+          }}
+        />
         <div style={{
           position: 'absolute',
           inset: 0,
           background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1), transparent 50%)'
         }}></div>
         
-        {/* 상단: WEDDING INVITATION */}
-        {/* 메인 타이틀 영역 */}
+        {/* 메인 타이틀 영역 - Parallax 적용 */}
         <motion.div
           style={{
             position: 'relative',
@@ -350,13 +385,12 @@ END:VCALENDAR`;
             width: '100%',
             maxWidth: '420px',
             margin: '0 auto',
-            textAlign: 'center'
+            textAlign: 'center',
+            y: titleY,
+            opacity: heroOpacity
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
         >
-          {/* 메인 캘리그라피 타이틀 */}
+          {/* 메인 캘리그라피 타이틀 - 순차 애니메이션 */}
           <motion.div 
             style={{ 
               fontFamily: "'NanumBrush', 'Suncheon', cursive",
@@ -368,36 +402,51 @@ END:VCALENDAR`;
               lineHeight: 1.2,
               textShadow: '2px 2px 4px rgba(0,0,0,0.08)'
             }}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            initial={{ opacity: 0, y: -40, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 1.2, 
+              delay: 0.3,
+              ease: [0.25, 0.46, 0.45, 0.94]
+            }}
           >
             {config.hero.titleLine1}
             {config.hero.titleLine2 && (
-              <span style={{ display: 'block' }}>{config.hero.titleLine2}</span>
+              <motion.span 
+                style={{ display: 'block' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              >
+                {config.hero.titleLine2}
+              </motion.span>
             )}
           </motion.div>
         </motion.div>
 
-        {/* 중앙: 신랑 신부 이름 + 날짜 */}
-        <div style={{ 
-          flex: 1, 
-          display: 'flex', 
-          flexDirection: 'column',
-          alignItems: 'center', 
-          justifyContent: 'center',
-          position: 'relative',
-          zIndex: 10
-        }}>
-          {/* 이름 */}
+        {/* 중앙: 신랑 신부 이름 + 날짜 - Parallax 적용 */}
+        <motion.div 
+          style={{ 
+            flex: 1, 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center', 
+            justifyContent: 'center',
+            position: 'relative',
+            zIndex: 10,
+            y: contentY,
+            opacity: heroOpacity
+          }}
+        >
+          {/* 이름 - 강화된 순차 애니메이션 */}
           <motion.div
             style={{ 
               textAlign: 'center',
               marginBottom: '2rem'
             }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1 }}
           >
             <div style={{
               display: 'flex',
@@ -405,67 +454,107 @@ END:VCALENDAR`;
               justifyContent: 'center',
               gap: '1rem'
             }}>
-              <span style={{ 
-                fontFamily: "'Gowun Batang', 'Nanum Myeongjo', serif",
-                fontSize: '1.75rem', 
-                fontWeight: 400, 
-                color: '#374151', 
-                letterSpacing: '0.2em'
-              }}>{config.groom.name}</span>
               <motion.span 
                 style={{ 
-                  fontSize: '1.25rem',
-                  color: theme.heart
+                  fontFamily: "'Gowun Batang', 'Nanum Myeongjo', serif",
+                  fontSize: '1.75rem', 
+                  fontWeight: 400, 
+                  color: '#374151', 
+                  letterSpacing: '0.2em'
                 }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
+              >
+                {config.groom.name}
+              </motion.span>
+              <motion.span 
+                style={{ 
+                  fontSize: '1.5rem',
+                  color: theme.heart,
+                  display: 'inline-block'
+                }}
+                initial={{ opacity: 0, scale: 0 }}
                 animate={{ 
-                  scale: [1, 1.15, 1],
+                  opacity: 1, 
+                  scale: [0, 1.3, 1],
                 }}
                 transition={{ 
-                  duration: 1.5, 
-                  repeat: Infinity,
-                  repeatType: 'loop'
+                  duration: 0.6, 
+                  delay: 1.6,
+                  ease: "easeOut"
                 }}
-              >♥</motion.span>
-              <span style={{ 
-                fontFamily: "'Gowun Batang', 'Nanum Myeongjo', serif",
-                fontSize: '1.75rem', 
-                fontWeight: 400, 
-                color: '#374151',
-                letterSpacing: '0.2em'
-              }}>{config.bride.name}</span>
+              >
+                <motion.span
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    repeat: Infinity,
+                    repeatType: 'loop',
+                    delay: 2.2
+                  }}
+                  style={{ display: 'inline-block' }}
+                >
+                  ♥
+                </motion.span>
+              </motion.span>
+              <motion.span 
+                style={{ 
+                  fontFamily: "'Gowun Batang', 'Nanum Myeongjo', serif",
+                  fontSize: '1.75rem', 
+                  fontWeight: 400, 
+                  color: '#374151',
+                  letterSpacing: '0.2em'
+                }}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
+              >
+                {config.bride.name}
+              </motion.span>
             </div>
           </motion.div>
 
-          {/* 날짜 - 세로 배치 */}
+          {/* 날짜 - 순차 fade in */}
           <motion.div
-            style={{
-              textAlign: 'center'
-            }}
+            style={{ textAlign: 'center' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            transition={{ duration: 0.8, delay: 2 }}
           >
             {/* 년월일 */}
-            <div style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: '1.1rem',
-              fontWeight: 400,
-              color: '#6b7280',
-              letterSpacing: '0.1em',
-              marginBottom: '0.25rem'
-            }}>
+            <motion.div 
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: '1.1rem',
+                fontWeight: 400,
+                color: '#6b7280',
+                letterSpacing: '0.1em',
+                marginBottom: '0.25rem'
+              }}
+              initial={{ opacity: 0, letterSpacing: '0.3em' }}
+              animate={{ opacity: 1, letterSpacing: '0.1em' }}
+              transition={{ duration: 1, delay: 2.2 }}
+            >
               2026. 04. 18
-            </div>
+            </motion.div>
             {/* 요일 시간 */}
-            <div style={{ 
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: '0.9rem', 
-              fontWeight: 400,
-              letterSpacing: '0.15em',
-              color: '#9ca3af'
-            }}>
+            <motion.div 
+              style={{ 
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: '0.9rem', 
+                fontWeight: 400,
+                letterSpacing: '0.15em',
+                color: '#9ca3af'
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 2.5 }}
+            >
               SAT. PM 1:00
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* 장소 */}
@@ -474,9 +563,9 @@ END:VCALENDAR`;
               textAlign: 'center',
               marginTop: '1.5rem'
             }}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
+            transition={{ duration: 0.8, delay: 2.8 }}
           >
             <div style={{ 
               fontFamily: "'KyoboHandwriting2021sjy', 'Gowun Dodum', sans-serif",
@@ -488,24 +577,50 @@ END:VCALENDAR`;
               {config.venue.name} {config.venue.branch}
             </div>
           </motion.div>
-        </div>
+        </motion.div>
 
-        {/* 스크롤 화살표 */}
+        {/* 스크롤 화살표 - 강화된 bounce 애니메이션 */}
         <motion.div
           style={{
             position: 'absolute',
-            bottom: '1.5rem',
+            bottom: '2rem',
             left: '50%',
             transform: 'translateX(-50%)',
-            zIndex: 20
+            zIndex: 20,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '0.5rem'
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.5 }}
+          transition={{ delay: 3.2, duration: 0.8 }}
         >
-          <svg style={{ width: '1.25rem', height: '1.25rem', color: '#9ca3af' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+          <motion.span
+            style={{
+              fontSize: '0.7rem',
+              color: '#9ca3af',
+              letterSpacing: '0.15em',
+              fontWeight: 300
+            }}
+          >
+            SCROLL
+          </motion.span>
+          <motion.div
+            animate={{ 
+              y: [0, 8, 0],
+            }}
+            transition={{ 
+              duration: 1.5, 
+              repeat: Infinity,
+              repeatType: 'loop',
+              ease: "easeInOut"
+            }}
+          >
+            <svg style={{ width: '1.5rem', height: '1.5rem', color: '#9ca3af' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </motion.div>
         </motion.div>
       </section>
 
@@ -522,59 +637,123 @@ END:VCALENDAR`;
               boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
               border: '1px solid rgba(255, 255, 255, 0.8)'
             }}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h2 style={{
-              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-              fontSize: '1.5rem',
-              fontWeight: 400,
-              textAlign: 'center',
-              marginBottom: '2rem',
-              color: '#374151',
-              letterSpacing: '0.15em'
-            }}>{config.sectionTitles.greeting}</h2>
+            {/* 섹션 타이틀 - reveal 효과 */}
+            <motion.h2 
+              style={{
+                fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
+                fontSize: '1.5rem',
+                fontWeight: 400,
+                textAlign: 'center',
+                marginBottom: '2rem',
+                color: '#374151',
+                letterSpacing: '0.15em'
+              }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              {config.sectionTitles.greeting}
+            </motion.h2>
+            
+            {/* 인사말 텍스트 - 한 줄씩 순차 reveal */}
             <div style={{ 
               display: 'flex',
               flexDirection: 'column',
               gap: '1rem',
               color: '#4b5563',
-              lineHeight: 1.625,
+              lineHeight: 1.8,
               fontSize: '0.9375rem',
               textAlign: 'center'
             }}>
-              <p style={{ fontWeight: 300 }}>
+              {/* 메인 메시지 - 각 줄이 순차적으로 나타남 */}
+              <div style={{ fontWeight: 300 }}>
                 {config.greeting.message.map((line, i) => (
-                  <span key={i}>{line}{i < config.greeting.message.length - 1 && <br />}</span>
+                  <motion.p 
+                    key={i}
+                    style={{ marginBottom: '0.25rem' }}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: 0.3 + (i * 0.1),
+                      ease: "easeOut"
+                    }}
+                  >
+                    {line}
+                  </motion.p>
                 ))}
-              </p>
-              <p style={{ fontWeight: 300, paddingTop: '0.5rem' }}>
+              </div>
+              
+              {/* 서브 메시지 - 약간의 딜레이 후 나타남 */}
+              <div style={{ fontWeight: 300, paddingTop: '0.5rem' }}>
                 {config.greeting.subMessage.map((line, i) => (
-                  <span key={i}>{line}{i < config.greeting.subMessage.length - 1 && <br />}</span>
+                  <motion.p 
+                    key={i}
+                    style={{ marginBottom: '0.25rem' }}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: 0.5 + (config.greeting.message.length * 0.1) + (i * 0.1),
+                      ease: "easeOut"
+                    }}
+                  >
+                    {line}
+                  </motion.p>
                 ))}
-              </p>
+              </div>
             </div>
-            <div style={{
-              marginTop: '2.5rem',
-              paddingTop: '1.5rem',
-              borderTop: '1px solid rgba(229, 231, 235, 0.6)',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              color: '#4b5563',
-              fontSize: '0.875rem'
-            }}>
-              <p style={{ fontWeight: 300 }}>{config.groom.fatherName} · {config.groom.motherName}의 {config.groom.relation} {config.groom.name}</p>
-              <p style={{ fontWeight: 300 }}>{config.bride.fatherName} · {config.bride.motherName}의 {config.bride.relation} {config.bride.name}</p>
-            </div>
+            
+            {/* 부모님 소개 - 구분선 애니메이션 + 순차 등장 */}
+            <motion.div 
+              style={{
+                marginTop: '2.5rem',
+                paddingTop: '1.5rem',
+                borderTop: '1px solid rgba(229, 231, 235, 0.6)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                color: '#4b5563',
+                fontSize: '0.875rem'
+              }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              <motion.p 
+                style={{ fontWeight: 300 }}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.9 }}
+              >
+                {config.groom.fatherName} · {config.groom.motherName}의 {config.groom.relation} <strong style={{ fontWeight: 500 }}>{config.groom.name}</strong>
+              </motion.p>
+              <motion.p 
+                style={{ fontWeight: 300 }}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 1.0 }}
+              >
+                {config.bride.fatherName} · {config.bride.motherName}의 {config.bride.relation} <strong style={{ fontWeight: 500 }}>{config.bride.name}</strong>
+              </motion.p>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* 픽셀아트 Section */}
+      {/* 픽셀아트 Section - 강화된 애니메이션 */}
       <section id="story" className="py-16">
         <div className="container">
           <motion.div
@@ -588,27 +767,48 @@ END:VCALENDAR`;
               border: '1px solid rgba(255, 255, 255, 0.8)',
               overflow: 'hidden'
             }}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h2 style={{
-              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-              fontSize: '1.5rem',
-              fontWeight: 400,
-              textAlign: 'center',
-              marginBottom: '2rem',
-              color: '#374151',
-              letterSpacing: '0.15em'
-            }}>{config.sectionTitles.story}</h2>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: '200px'
-            }}>
-              <img 
+            {/* 섹션 타이틀 - reveal 효과 */}
+            <motion.h2 
+              style={{
+                fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
+                fontSize: '1.5rem',
+                fontWeight: 400,
+                textAlign: 'center',
+                marginBottom: '2rem',
+                color: '#374151',
+                letterSpacing: '0.15em'
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              {config.sectionTitles.story}
+            </motion.h2>
+            
+            {/* 픽셀아트 이미지 - scale-up 등장 효과 */}
+            <motion.div 
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '200px'
+              }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ 
+                duration: 0.8, 
+                delay: 0.3,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+            >
+              <motion.img 
                 src={config.pixelArt}
                 alt="픽셀아트" 
                 style={{
@@ -617,6 +817,8 @@ END:VCALENDAR`;
                   borderRadius: '0.75rem',
                   boxShadow: '0 4px 16px 0 rgba(0,0,0,0.08)'
                 }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   const errorDiv = e.target.nextElementSibling;
@@ -637,20 +839,33 @@ END:VCALENDAR`;
                 <p>픽셀아트 이미지를 준비해주세요</p>
                 <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', color: '#9ca3af' }}>/public/pixel-art.gif 파일을 추가하세요</p>
               </div>
-            </div>
+            </motion.div>
             
-            {/* 우리의 이야기 텍스트 */}
+            {/* 우리의 이야기 텍스트 - 순차 reveal */}
             {config.ourStory && config.ourStory.length > 0 && (
-              <div style={{ 
-                marginTop: '2rem',
-                paddingTop: '1.5rem',
-                borderTop: '1px solid rgba(229, 231, 235, 0.6)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1.5rem'
-              }}>
+              <motion.div 
+                style={{ 
+                  marginTop: '2rem',
+                  paddingTop: '1.5rem',
+                  borderTop: '1px solid rgba(229, 231, 235, 0.6)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.5rem'
+                }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
                 {config.ourStory.map((story, idx) => (
-                  <div key={idx} style={{ textAlign: 'center' }}>
+                  <motion.div 
+                    key={idx} 
+                    style={{ textAlign: 'center' }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.6 + (idx * 0.2) }}
+                  >
                     <div style={{ 
                       color: '#4b5563', 
                       fontSize: '0.9375rem', 
@@ -659,44 +874,76 @@ END:VCALENDAR`;
                       fontStyle: 'italic'
                     }}>
                       {story.text.map((line, lineIdx) => (
-                        <p key={lineIdx}>{line}</p>
+                        <motion.p 
+                          key={lineIdx}
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.4, delay: 0.7 + (idx * 0.2) + (lineIdx * 0.1) }}
+                        >
+                          {line}
+                        </motion.p>
                       ))}
                     </div>
-                    <p style={{ 
-                      marginTop: '0.75rem', 
-                      color: '#6b7280', 
-                      fontSize: '0.8125rem',
-                      fontWeight: 400
-                    }}>— {story.author}</p>
-                  </div>
+                    <motion.p 
+                      style={{ 
+                        marginTop: '0.75rem', 
+                        color: '#6b7280', 
+                        fontSize: '0.8125rem',
+                        fontWeight: 400
+                      }}
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.9 + (idx * 0.2) }}
+                    >
+                      — {story.author}
+                    </motion.p>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </motion.div>
         </div>
       </section>
 
-      {/* 갤러리 Section */}
-      <section id="gallery" className="py-16">
+      {/* 갤러리 Section - Apple 스타일 scroll-linked zoom */}
+      <section id="gallery" className="py-16" ref={galleryRef}>
         <div className="container">
-          <h2 style={{
-            fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-            fontSize: '1.5rem',
-            fontWeight: 400,
-            textAlign: 'center',
-            marginBottom: '2rem',
-            color: '#374151',
-            letterSpacing: '0.15em'
-          }}>{config.sectionTitles.gallery}</h2>
-          <div style={{
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            backgroundColor: 'rgba(255, 255, 255, 0.6)',
-            borderRadius: '1rem',
-            padding: '1rem',
-            boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
-            border: '1px solid rgba(255, 255, 255, 0.8)'
-          }}>
+          {/* 섹션 타이틀 */}
+          <motion.h2 
+            style={{
+              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
+              fontSize: '1.5rem',
+              fontWeight: 400,
+              textAlign: 'center',
+              marginBottom: '2rem',
+              color: '#374151',
+              letterSpacing: '0.15em'
+            }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {config.sectionTitles.gallery}
+          </motion.h2>
+          
+          {/* 갤러리 컨테이너 - scroll-linked 효과 적용 */}
+          <motion.div 
+            style={{
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              backgroundColor: 'rgba(255, 255, 255, 0.6)',
+              borderRadius: '1rem',
+              padding: '1rem',
+              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.8)',
+              scale: galleryScale,
+              opacity: galleryOpacity,
+              y: galleryY
+            }}
+          >
             <div 
               style={{
                 position: 'relative',
@@ -862,16 +1109,22 @@ END:VCALENDAR`;
               )}
             </div>
             
-            {/* 인디케이터 */}
+            {/* 인디케이터 - 애니메이션 추가 */}
             {galleryImages.length > 1 && (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                marginTop: '1rem'
-              }}>
+              <motion.div 
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  marginTop: '1rem'
+                }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
                 {galleryImages.map((_, index) => (
-                  <button
+                  <motion.button
                     key={index}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -884,18 +1137,24 @@ END:VCALENDAR`;
                       border: 'none',
                       backgroundColor: index === currentImageIndex ? theme.indicatorActive : theme.indicatorInactive,
                       cursor: 'pointer',
-                      transition: 'all 300ms'
                     }}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    animate={{ 
+                      width: index === currentImageIndex ? '1.5rem' : '0.5rem',
+                      backgroundColor: index === currentImageIndex ? theme.indicatorActive : theme.indicatorInactive 
+                    }}
+                    transition={{ duration: 0.3 }}
                     aria-label={`이미지 ${index + 1}로 이동`}
                   />
                 ))}
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* 오시는 길 Section */}
+      {/* 오시는 길 Section - 강화된 애니메이션 */}
       <section id="location" className="py-16">
         <div className="container">
           <motion.div
@@ -908,27 +1167,74 @@ END:VCALENDAR`;
               boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
               border: '1px solid rgba(255, 255, 255, 0.8)'
             }}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h2 style={{
-              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-              fontSize: '1.5rem',
-              fontWeight: 400,
-              textAlign: 'center',
-              marginBottom: '2rem',
-              color: '#374151',
-              letterSpacing: '0.15em'
-            }}>{config.sectionTitles.location}</h2>
-            <div style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#4b5563' }}>
-              <p style={{ fontSize: '1rem', fontWeight: 300, marginBottom: '0.5rem' }}>{config.venue.name} {config.venue.branch}</p>
+            {/* 섹션 타이틀 */}
+            <motion.h2 
+              style={{
+                fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
+                fontSize: '1.5rem',
+                fontWeight: 400,
+                textAlign: 'center',
+                marginBottom: '2rem',
+                color: '#374151',
+                letterSpacing: '0.15em'
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              {config.sectionTitles.location}
+            </motion.h2>
+            
+            {/* 장소 정보 - 순차 등장 */}
+            <motion.div 
+              style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#4b5563' }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <motion.p 
+                style={{ fontSize: '1rem', fontWeight: 300, marginBottom: '0.5rem' }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                {config.venue.name} {config.venue.branch}
+              </motion.p>
               {config.venue.hall && (
-                <p style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '0.5rem' }}>{config.venue.hall}</p>
+                <motion.p 
+                  style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '0.5rem' }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.4 }}
+                >
+                  {config.venue.hall}
+                </motion.p>
               )}
-              <p style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '1rem' }}>{config.wedding.year} {config.wedding.monthDay} {config.wedding.dayOfWeek} {config.wedding.timeText}</p>
-              <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300 }}>
+              <motion.p 
+                style={{ fontSize: '0.875rem', color: '#6b7280', fontWeight: 300, marginBottom: '1rem' }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.5 }}
+              >
+                {config.wedding.year} {config.wedding.monthDay} {config.wedding.dayOfWeek} {config.wedding.timeText}
+              </motion.p>
+              <motion.div 
+                style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300 }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.6 }}
+              >
                 <p style={{ marginBottom: '0.75rem', fontWeight: 400 }}>주소</p>
                 <p style={{ lineHeight: 1.625 }}>
                   {config.venue.address}<br />
@@ -936,18 +1242,24 @@ END:VCALENDAR`;
                     <span style={{ color: '#6b7280' }}>{config.venue.addressDetail}</span>
                   )}
                 </p>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
             
-            {/* 지도 이미지 */}
-            <div style={{
-              borderRadius: '0.75rem',
-              overflow: 'hidden',
-              boxShadow: '0 4px 16px 0 rgba(0,0,0,0.08)',
-              marginBottom: '1rem',
-              backgroundColor: '#f3f4f6'
-            }}>
-              <img 
+            {/* 지도 이미지 - zoom-in 효과 */}
+            <motion.div 
+              style={{
+                borderRadius: '0.75rem',
+                overflow: 'hidden',
+                boxShadow: '0 4px 16px 0 rgba(0,0,0,0.08)',
+                marginBottom: '1rem',
+                backgroundColor: '#f3f4f6'
+              }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+            >
+              <motion.img 
                 src={config.maps.image}
                 alt="오시는 길"
                 style={{
@@ -955,6 +1267,8 @@ END:VCALENDAR`;
                   height: 'auto',
                   display: 'block'
                 }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   const errorDiv = e.target.nextElementSibling;
@@ -975,20 +1289,26 @@ END:VCALENDAR`;
                 </svg>
                 <p style={{ color: '#9ca3af', fontSize: '0.75rem' }}>/public/map_image.jpg 파일을 추가하세요</p>
               </div>
-            </div>
+            </motion.div>
 
-            {/* 지도 탭 */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '0.25rem',
-              marginBottom: '1rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.5)',
-              borderRadius: '0.75rem',
-              padding: '0.25rem'
-            }}>
-              {mapTabs.map((tab) => (
-                <button
+            {/* 지도 탭 - 애니메이션 */}
+            <motion.div 
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '0.25rem',
+                marginBottom: '1rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                borderRadius: '0.75rem',
+                padding: '0.25rem'
+              }}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              {mapTabs.map((tab, idx) => (
+                <motion.button
                   key={tab.id}
                   onClick={() => setActiveMapTab(tab.id)}
                   style={{
@@ -1001,21 +1321,32 @@ END:VCALENDAR`;
                     fontSize: '0.8125rem',
                     fontWeight: activeMapTab === tab.id ? 500 : 300,
                     cursor: 'pointer',
-                    transition: 'all 200ms',
                     boxShadow: activeMapTab === tab.id ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
                   }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  animate={{
+                    backgroundColor: activeMapTab === tab.id ? 'white' : 'transparent',
+                  }}
+                  transition={{ duration: 0.2 }}
                 >
                   {tab.label}
-                </button>
+                </motion.button>
               ))}
-            </div>
+            </motion.div>
 
-            {/* 지도 앱 열기 버튼 */}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center'
-            }}>
-              <a
+            {/* 지도 앱 열기 버튼 - 애니메이션 */}
+            <motion.div 
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'center'
+              }}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+            >
+              <motion.a
                 href={
                   activeMapTab === 'naver' ? config.maps.naver :
                   activeMapTab === 'kakao' ? config.maps.kakao :
@@ -1043,7 +1374,6 @@ END:VCALENDAR`;
                   fontWeight: 400,
                   textDecoration: 'none',
                   boxShadow: '0 2px 8px 0 rgba(0,0,0,0.1)',
-                  transition: 'all 300ms',
                   cursor: 'pointer',
                   border: `1px solid ${
                     activeMapTab === 'naver' ? 'rgba(3, 199, 90, 0.3)' :
@@ -1051,240 +1381,84 @@ END:VCALENDAR`;
                     'rgba(228, 0, 43, 0.3)'
                   }`
                 }}
+                whileHover={{ scale: 1.03, boxShadow: '0 4px 12px 0 rgba(0,0,0,0.15)' }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.2 }}
               >
                 <svg style={{ width: '1.125rem', height: '1.125rem' }} viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
                 {activeMapTab === 'naver' ? '네이버 지도' : activeMapTab === 'kakao' ? '카카오맵' : 'T맵'}에서 열기
-              </a>
-            </div>
+              </motion.a>
+            </motion.div>
 
-            {/* 교통편 정보 */}
-            <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <p style={{ textAlign: 'center', marginBottom: '0.75rem', fontWeight: 400 }}>교통편</p>
+            {/* 교통편 정보 - 순차 등장 */}
+            <motion.div 
+              style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              <motion.p 
+                style={{ textAlign: 'center', marginBottom: '0.75rem', fontWeight: 400 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.9 }}
+              >
+                교통편
+              </motion.p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textAlign: 'center' }}>
                 {config.transportation.map((item, index) => (
-                  <p key={index}>{item}</p>
+                  <motion.p 
+                    key={index}
+                    initial={{ opacity: 0, x: index % 2 === 0 ? -10 : 10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 1.0 + (index * 0.1) }}
+                  >
+                    {item}
+                  </motion.p>
                 ))}
               </div>
               {config.busInfo && (
-                <p style={{ textAlign: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)' }}>{config.busInfo}</p>
+                <motion.p 
+                  style={{ textAlign: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(229, 231, 235, 0.6)' }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 1.2 }}
+                >
+                  {config.busInfo}
+                </motion.p>
               )}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* D-Day 카운터 Section - 임시 주석 처리 */}
-      {/*
-      <section id="dday" className="py-16">
+      {/* 계좌번호 Section - 카드 애니메이션 */}
+      <section id="account" className="py-16">
         <div className="container">
-          <motion.div
+          {/* 섹션 타이틀 */}
+          <motion.h2 
             style={{
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-              borderRadius: '1rem',
-              padding: '2rem',
-              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.8)'
-            }}
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 style={{
+              fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
               fontSize: '1.5rem',
-              fontWeight: 300,
+              fontWeight: 400,
               textAlign: 'center',
-              marginBottom: '2.5rem',
+              marginBottom: '1.5rem',
               color: '#374151',
-              letterSpacing: '0.025em'
-            }}>D-Day</h2>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '0.625rem'
-            }}>
-              {[
-                { label: '일', value: timeLeft.days },
-                { label: '시', value: timeLeft.hours },
-                { label: '분', value: timeLeft.minutes },
-                { label: '초', value: timeLeft.seconds },
-              ].map((item, index) => (
-                <div key={index} style={{ textAlign: 'center' }}>
-                  <div style={{
-                    backdropFilter: 'blur(4px)',
-                    WebkitBackdropFilter: 'blur(4px)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                    borderRadius: '0.75rem',
-                    padding: '0.75rem',
-                    boxShadow: '0 4px 16px 0 rgba(0,0,0,0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.6)'
-                  }}>
-                    <div style={{
-                      fontSize: '1.875rem',
-                      fontWeight: 300,
-                      color: '#374151',
-                      marginBottom: '0.125rem',
-                      letterSpacing: '-0.025em'
-                    }}>
-                      {String(item.value).padStart(2, '0')}
-                    </div>
-                    <div style={{
-                      fontSize: '0.75rem',
-                      color: '#6b7280',
-                      fontWeight: 300
-                    }}>{item.label}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-      */}
-
-      {/* 캘린더 추가 Section - 임시 주석 처리 */}
-      {/*
-      <section id="calendar" className="py-16">
-        <div className="container">
-          <motion.div
-            style={{
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-              borderRadius: '1rem',
-              padding: '2rem',
-              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.8)',
-              textAlign: 'center'
+              letterSpacing: '0.15em'
             }}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 style={{
-              fontSize: '1.5rem',
-              fontWeight: 300,
-              marginBottom: '1.5rem',
-              color: '#374151',
-              letterSpacing: '0.025em'
-            }}>캘린더에 추가</h2>
-            <p style={{
-              color: '#4b5563',
-              marginBottom: '1.5rem',
-              fontSize: '0.875rem',
-              fontWeight: 300
-            }}>
-              결혼식 일정을 캘린더에 추가하시겠어요?
-            </p>
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '0.25rem',
-              marginBottom: '1rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.5)',
-              borderRadius: '0.75rem',
-              padding: '0.25rem'
-            }}>
-              {[
-                { id: 'google', label: 'Google' },
-                { id: 'apple', label: 'Apple' },
-                { id: 'android', label: 'Android' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveCalendarTab(tab.id)}
-                  style={{
-                    flex: 1,
-                    padding: '0.625rem 0.5rem',
-                    borderRadius: '0.5rem',
-                    border: 'none',
-                    backgroundColor: activeCalendarTab === tab.id ? 'white' : 'transparent',
-                    color: activeCalendarTab === tab.id ? '#374151' : '#6b7280',
-                    fontSize: '0.8125rem',
-                    fontWeight: activeCalendarTab === tab.id ? 500 : 300,
-                    cursor: 'pointer',
-                    transition: 'all 200ms',
-                    boxShadow: activeCalendarTab === tab.id ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            <a
-              href={
-                activeCalendarTab === 'google' 
-                  ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${config.groom.name} & ${config.bride.name} 결혼식`)}&dates=${config.wedding.date.replace(/-/g, '')}T${config.wedding.time.replace(':', '')}00/${config.wedding.date.replace(/-/g, '')}T${String(parseInt(config.wedding.time.split(':')[0]) + 2).padStart(2, '0')}0000&details=${encodeURIComponent(`${config.venue.name}에서 열리는 결혼식에 초대합니다.`)}&location=${encodeURIComponent(config.venue.address)}`
-                  : undefined
-              }
-              onClick={(e) => {
-                if (activeCalendarTab !== 'google') {
-                  e.preventDefault();
-                  downloadICS();
-                }
-              }}
-              target={activeCalendarTab === 'google' ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                backdropFilter: 'blur(4px)',
-                WebkitBackdropFilter: 'blur(4px)',
-                backgroundColor: 
-                  activeCalendarTab === 'google' ? 'rgba(66, 133, 244, 0.15)' :
-                  activeCalendarTab === 'apple' ? 'rgba(0, 0, 0, 0.08)' :
-                  'rgba(61, 220, 132, 0.15)',
-                borderRadius: '0.75rem',
-                padding: '0.75rem 1.5rem',
-                color: 
-                  activeCalendarTab === 'google' ? '#4285F4' :
-                  activeCalendarTab === 'apple' ? '#1d1d1f' :
-                  '#3DDC84',
-                fontSize: '0.875rem',
-                fontWeight: 400,
-                textDecoration: 'none',
-                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
-                transition: 'all 300ms',
-                cursor: 'pointer',
-                border: `1px solid ${
-                  activeCalendarTab === 'google' ? 'rgba(66, 133, 244, 0.3)' :
-                  activeCalendarTab === 'apple' ? 'rgba(0, 0, 0, 0.15)' :
-                  'rgba(61, 220, 132, 0.3)'
-                }`
-              }}
-            >
-              <svg style={{ width: '1.125rem', height: '1.125rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {activeCalendarTab === 'google' ? 'Google 캘린더' : 
-               activeCalendarTab === 'apple' ? 'Apple 캘린더' : 'Android 캘린더'}에 추가
-            </a>
-          </motion.div>
-        </div>
-      </section>
-      */}
-
-      {/* 계좌번호 Section */}
-      <section id="account" className="py-16">
-        <div className="container">
-          <h2 style={{
-            fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-            fontSize: '1.5rem',
-            fontWeight: 400,
-            textAlign: 'center',
-            marginBottom: '1.5rem',
-            color: '#374151',
-            letterSpacing: '0.15em'
-          }}>{config.sectionTitles.account}</h2>
+            {config.sectionTitles.account}
+          </motion.h2>
           
           <motion.div
             style={{
@@ -1296,27 +1470,41 @@ END:VCALENDAR`;
               boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
               border: '1px solid rgba(255, 255, 255, 0.8)'
             }}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           >
             {/* 신랑측 */}
-            <div style={{ marginBottom: '1rem' }}>
-              <p style={{ 
-                fontSize: '0.9375rem', 
-                fontWeight: 500, 
-                color: '#374151', 
-                marginBottom: '0.75rem',
-                textAlign: 'center'
-              }}>신랑측</p>
+            <motion.div 
+              style={{ marginBottom: '1rem' }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <motion.p 
+                style={{ 
+                  fontSize: '0.9375rem', 
+                  fontWeight: 500, 
+                  color: '#374151', 
+                  marginBottom: '0.75rem',
+                  textAlign: 'center'
+                }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                신랑측
+              </motion.p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                 {[
                   { key: 'groom', label: config.groom.name, role: '신랑', account: config.accounts.groom },
                   { key: 'groomFather', label: config.groom.fatherName, role: '아버지', account: config.accounts.groomFather },
                   { key: 'groomMother', label: config.groom.motherName, role: '어머니', account: config.accounts.groomMother },
-                ].filter(item => item.account?.bank).map((item) => (
-                  <button
+                ].filter(item => item.account?.bank).map((item, idx) => (
+                  <motion.button
                     key={item.key}
                     onClick={() => setExpandedAccount(expandedAccount === item.key ? null : item.key)}
                     style={{
@@ -1330,35 +1518,64 @@ END:VCALENDAR`;
                       padding: '0.75rem 0.5rem',
                       border: 'none',
                       cursor: 'pointer',
-                      transition: 'all 200ms'
+                    }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.4 + (idx * 0.1) }}
+                    whileHover={{ scale: 1.03, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    whileTap={{ scale: 0.97 }}
+                    animate={{
+                      backgroundColor: expandedAccount === item.key ? theme.accentSolid : 'rgba(255,255,255,0.7)',
+                      color: expandedAccount === item.key ? 'white' : '#374151',
                     }}
                   >
                     <span style={{ fontSize: '0.6875rem', opacity: 0.8, marginBottom: '0.125rem' }}>{item.role}</span>
                     <span style={{ fontSize: '0.8125rem', fontWeight: 500 }}>{item.label}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* 구분선 */}
-            <div style={{ height: '1px', backgroundColor: 'rgba(0,0,0,0.08)', margin: '0.75rem 0' }} />
+            <motion.div 
+              style={{ height: '1px', backgroundColor: 'rgba(0,0,0,0.08)', margin: '0.75rem 0' }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            />
 
             {/* 신부측 */}
-            <div style={{ marginBottom: '0.75rem' }}>
-              <p style={{ 
-                fontSize: '0.9375rem', 
-                fontWeight: 500, 
-                color: '#374151', 
-                marginBottom: '0.75rem',
-                textAlign: 'center'
-              }}>신부측</p>
+            <motion.div 
+              style={{ marginBottom: '0.75rem' }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <motion.p 
+                style={{ 
+                  fontSize: '0.9375rem', 
+                  fontWeight: 500, 
+                  color: '#374151', 
+                  marginBottom: '0.75rem',
+                  textAlign: 'center'
+                }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.6 }}
+              >
+                신부측
+              </motion.p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                 {[
                   { key: 'bride', label: config.bride.name, role: '신부', account: config.accounts.bride },
                   { key: 'brideFather', label: config.bride.fatherName, role: '아버지', account: config.accounts.brideFather },
                   { key: 'brideMother', label: config.bride.motherName, role: '어머니', account: config.accounts.brideMother },
-                ].filter(item => item.account?.bank).map((item) => (
-                  <button
+                ].filter(item => item.account?.bank).map((item, idx) => (
+                  <motion.button
                     key={item.key}
                     onClick={() => setExpandedAccount(expandedAccount === item.key ? null : item.key)}
                     style={{
@@ -1372,15 +1589,24 @@ END:VCALENDAR`;
                       padding: '0.75rem 0.5rem',
                       border: 'none',
                       cursor: 'pointer',
-                      transition: 'all 200ms'
+                    }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.7 + (idx * 0.1) }}
+                    whileHover={{ scale: 1.03, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    whileTap={{ scale: 0.97 }}
+                    animate={{
+                      backgroundColor: expandedAccount === item.key ? theme.accentSolid : 'rgba(255,255,255,0.7)',
+                      color: expandedAccount === item.key ? 'white' : '#374151',
                     }}
                   >
                     <span style={{ fontSize: '0.6875rem', opacity: 0.8, marginBottom: '0.125rem' }}>{item.role}</span>
                     <span style={{ fontSize: '0.8125rem', fontWeight: 500 }}>{item.label}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* 선택된 계좌 정보 표시 */}
             <AnimatePresence>
@@ -1445,35 +1671,62 @@ END:VCALENDAR`;
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ padding: '3rem 1rem', textAlign: 'center', color: '#6b7280' }}>
+      {/* Footer - 애니메이션 */}
+      <motion.footer 
+        style={{ padding: '3rem 1rem', textAlign: 'center', color: '#6b7280' }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="container">
-          <p style={{ marginBottom: '0.375rem', fontSize: '0.875rem', fontWeight: 300 }}>{config.groom.name} ♥ {config.bride.name}</p>
-          <p style={{ marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 300 }}>{config.wedding.year} {config.wedding.monthDay}</p>
-          <p style={{ fontSize: '0.75rem', fontWeight: 300 }}>
+          <motion.p 
+            style={{ marginBottom: '0.375rem', fontSize: '0.875rem', fontWeight: 300 }}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {config.groom.name} ♥ {config.bride.name}
+          </motion.p>
+          <motion.p 
+            style={{ marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 300 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            {config.wedding.year} {config.wedding.monthDay}
+          </motion.p>
+          <motion.p 
+            style={{ fontSize: '0.75rem', fontWeight: 300 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             {config.footer.message}
             {config.footer.showRepository && config.footer.repository && (
               <>
                 {' '}
-                <a 
+                <motion.a 
                   href={config.footer.repository} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   style={{ 
                     color: '#9ca3af',
                     textDecoration: 'underline',
-                    transition: 'color 200ms'
                   }}
-                  onMouseEnter={(e) => e.target.style.color = theme.accentSolid}
-                  onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+                  whileHover={{ color: theme.accentSolid }}
+                  transition={{ duration: 0.2 }}
                 >
                   GitHub
-                </a>
+                </motion.a>
               </>
             )}
-          </p>
+          </motion.p>
         </div>
-      </footer>
+      </motion.footer>
 
       {/* 플로팅 목차 버튼 */}
       <div style={{
