@@ -367,7 +367,7 @@ END:VCALENDAR`;
             }}
           >
             <img 
-              src="/hero_main.jpg"
+              src={config.hero.backgroundImage}
               alt="Wedding"
               style={{
                 width: '100%',
@@ -419,7 +419,7 @@ END:VCALENDAR`;
                 display: 'block',
                 whiteSpace: 'nowrap'
               }}>
-                Lee Ah-rom
+                {config.hero.nameEn1}
               </span>
               <span style={{
                 fontFamily: "'La Paloma', 'Great Vibes', cursive",
@@ -439,7 +439,7 @@ END:VCALENDAR`;
                 display: 'block',
                 whiteSpace: 'nowrap'
               }}>
-                Shin Gyeong-ryun
+                {config.hero.nameEn2}
               </span>
             </motion.div>
 
@@ -474,7 +474,7 @@ END:VCALENDAR`;
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.2 }}
             >
-              2026. 4. 18 (Sat) PM 1
+              {config.hero.dateDisplay}
             </motion.div>
 
             {/* 장소 */}
@@ -490,7 +490,7 @@ END:VCALENDAR`;
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.5 }}
             >
-              청주 에스가든 웨딩 컨벤션
+              {config.hero.venueShort}
             </motion.p>
           </motion.div>
 
