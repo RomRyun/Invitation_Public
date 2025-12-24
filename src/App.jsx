@@ -379,6 +379,13 @@ END:VCALENDAR`;
                 objectPosition: 'center center'
               }}
             />
+            {/* 베이지 오버레이 - 배경색과 자연스럽게 연결 */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to bottom, rgba(229,225,216,0.3) 0%, rgba(229,225,216,0) 30%, rgba(229,225,216,0) 70%, rgba(229,225,216,0.5) 100%)',
+              pointerEvents: 'none'
+            }} />
           </motion.div>
 
           {/* 텍스트 콘텐츠 - 항상 보임 */}
