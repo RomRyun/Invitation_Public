@@ -45,10 +45,10 @@ function App() {
     offset: ["start start", "end start"]
   });
   
-  // Zoom out 효과: 처음에 확대 → 스크롤 30%에서 전체 이미지로
-  const imageScale = useTransform(heroProgress, [0, 0.3], [1.5, 1]);
-  // 마스크 크기: 스크롤 0~30%에서 완전히 드러남
-  const maskSize = useTransform(heroProgress, [0, 0.3], [0, 200]);
+  // Zoom out 효과: 1.5배 → 1배 (빠르게)
+  const imageScale = useTransform(heroProgress, [0, 0.25], [1.5, 1]);
+  // 마스크 크기: 0%에서 시작 (완전 검은색) → 빠르게 드러남
+  const maskSize = useTransform(heroProgress, [0, 0.25], [0, 200]);
   // 텍스트 위치
   const textY = useTransform(heroProgress, [0.5, 0.7], [0, -15]);
 
@@ -238,7 +238,7 @@ END:VCALENDAR`;
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: theme.bgGradient 
+      background: 'linear-gradient(to bottom, #F5F0E6, #EDE8DC, #E8E4D9)'
     }}>
       {/* 이미지 확대 모달 */}
       <AnimatePresence>
@@ -340,7 +340,7 @@ END:VCALENDAR`;
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          backgroundColor: '#0a0a0a'
+          backgroundColor: '#000000'
         }}>
           {/* 배경 이미지 - Zoom out 효과 + 마스크 */}
           <motion.div
@@ -364,8 +364,8 @@ END:VCALENDAR`;
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
-                objectPosition: 'center 40%'
+                objectFit: 'contain',
+                objectPosition: 'center center'
               }}
             />
             {/* 이미지 위 오버레이 - 텍스트 가독성 */}
