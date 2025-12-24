@@ -30,7 +30,7 @@ export const theme = {
 
 export const config = {
   // ============================================================
-  // 1. 첫 페이지 (Hero) - 영문 이름, 날짜, 장소
+  // 1. 첫 페이지 (Hero) - 표지 ⚠️ px 단위: 디바이스 폰트 설정 무시
   // ============================================================
   hero: {
     // 배경 이미지
@@ -38,27 +38,27 @@ export const config = {
     
     // --- A. 영문 이름 1 (신랑) ---
     nameEn1: 'Lee Ah-rom',
-    nameEn1Size: 'clamp(1.5rem, 5vw, 2.4rem)',
+    nameEn1Size: 'clamp(24px, 5vw, 38px)',
     
     // --- B. & 기호 ---
     ampersand: '&',
-    ampersandSize: 'clamp(1rem, 2.5vw, 1.4rem)',
+    ampersandSize: 'clamp(16px, 2.5vw, 22px)',
     
     // --- C. 영문 이름 2 (신부) ---
     nameEn2: 'Shin Gyeong-ryun',
-    nameEn2Size: 'clamp(1.5rem, 5vw, 2.4rem)',
+    nameEn2Size: 'clamp(24px, 5vw, 38px)',
     
     // --- D. 한글 초대 문구 ---
     inviteText: '아롬 ♥ 경륜의 결혼식에 초대합니다',
-    inviteTextSize: 'clamp(0.95rem, 3vw, 1.15rem)',
+    inviteTextSize: 'clamp(15px, 3vw, 18px)',
     
     // --- E. 날짜/시간 ---
     dateDisplay: '2026. 4. 18 (Sat) PM 1',
-    dateDisplaySize: 'clamp(1.3rem, 4.5vw, 1.8rem)',
+    dateDisplaySize: 'clamp(21px, 4.5vw, 29px)',
     
     // --- F. 장소 ---
     venueShort: '청주 에스가든 웨딩 컨벤션',
-    venueShortSize: 'clamp(0.95rem, 3vw, 1.15rem)',
+    venueShortSize: 'clamp(15px, 3vw, 18px)',
   },
 
   // ============================================================
