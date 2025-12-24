@@ -38,18 +38,18 @@ function App() {
   const galleryOpacity = useTransform(galleryScrollProgress, [0, 0.2, 0.8, 1], [0.6, 1, 1, 0.6]);
   const galleryY = useTransform(galleryScrollProgress, [0, 0.5, 1], [50, 0, -30]);
   
-  // 첫 페이지 Hero 섹션 - Apple 스타일 reveal
+  // 첫 페이지 Hero 섹션 - 커튼 reveal 효과
   const heroRef = useRef(null);
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   });
   
-  // 원형 마스크가 점점 커지면서 이미지가 드러나는 효과
-  const clipPathRadius = useTransform(heroProgress, [0, 0.5, 1], [5, 75, 150]);
-  const imageScale = useTransform(heroProgress, [0, 0.5, 1], [1.3, 1.1, 1]);
-  const textOpacity = useTransform(heroProgress, [0, 0.3], [1, 0]);
-  const textY = useTransform(heroProgress, [0, 0.3], [0, -50]);
+  // 위에서 아래로 커튼처럼 벗겨지는 효과 (0~60% 구간에서 reveal)
+  const maskY = useTransform(heroProgress, [0, 0.5], [0, 100]);
+  const imageScale = useTransform(heroProgress, [0, 0.5], [1.15, 1]);
+  // 텍스트는 계속 유지 (살짝만 위로 이동)
+  const textY = useTransform(heroProgress, [0.5, 0.8], [0, -30]);
 
   // 목차 데이터
   const menuItems = [
@@ -323,11 +323,11 @@ END:VCALENDAR`;
         )}
       </AnimatePresence>
 
-      {/* Apple 스타일 이미지 Reveal - 첫 페이지 */}
+      {/* 커튼 Reveal 효과 - 첫 페이지 */}
       <section 
         ref={heroRef}
         style={{
-          height: '200vh',
+          height: '250vh',
           position: 'relative'
         }}
       >
@@ -339,15 +339,14 @@ END:VCALENDAR`;
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          backgroundColor: '#1a1a1a'
+          backgroundColor: '#111'
         }}>
-          {/* 원형 마스크로 드러나는 이미지 */}
+          {/* 배경 이미지 */}
           <motion.div
             style={{
               position: 'absolute',
               width: '100%',
               height: '100%',
-              clipPath: useTransform(clipPathRadius, (r) => `circle(${r}% at 50% 50%)`),
               scale: imageScale
             }}
           >
@@ -358,18 +357,32 @@ END:VCALENDAR`;
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                objectPosition: 'center 30%'
+                objectPosition: 'center center'
               }}
             />
-            {/* 이미지 위 오버레이 */}
+            {/* 이미지 위 오버레이 - 텍스트 가독성 */}
             <div style={{
               position: 'absolute',
               inset: 0,
-              background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)'
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.35) 100%)'
             }} />
           </motion.div>
-          
-          {/* 텍스트 콘텐츠 */}
+
+          {/* 커튼 마스크 - 위에서 아래로 걷히는 효과 */}
+          <motion.div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '100%',
+              background: 'linear-gradient(to bottom, #111 0%, #1a1a1a 100%)',
+              y: useTransform(maskY, (y) => `${-y}%`),
+              zIndex: 5
+            }}
+          />
+
+          {/* 텍스트 콘텐츠 - 항상 보임 */}
           <motion.div
             style={{
               position: 'relative',
@@ -377,43 +390,42 @@ END:VCALENDAR`;
               textAlign: 'center',
               color: 'white',
               padding: '2rem',
-              opacity: textOpacity,
               y: textY
             }}
           >
             {/* 영문 타이틀 - La Paloma */}
             <motion.div
-              style={{ marginBottom: '1.5rem' }}
-              initial={{ opacity: 0, y: -30 }}
+              style={{ marginBottom: '1.2rem' }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
             >
               <span style={{
                 fontFamily: "'La Paloma', 'Great Vibes', cursive",
-                fontSize: '2.2rem',
+                fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
                 fontWeight: 400,
                 letterSpacing: '0.02em',
-                textShadow: '0 2px 20px rgba(0,0,0,0.6)',
+                textShadow: '0 2px 25px rgba(0,0,0,0.7)',
                 display: 'inline'
               }}>
                 Lee Ah-rom
               </span>
               <span style={{
                 fontFamily: "'La Paloma', 'Great Vibes', cursive",
-                fontSize: '1.3rem',
+                fontSize: 'clamp(1rem, 3vw, 1.5rem)',
                 fontWeight: 400,
-                textShadow: '0 2px 20px rgba(0,0,0,0.6)',
-                margin: '0 0.4rem',
+                textShadow: '0 2px 25px rgba(0,0,0,0.7)',
+                margin: '0 0.3rem',
                 display: 'inline'
               }}>
                 &
               </span>
               <span style={{
                 fontFamily: "'La Paloma', 'Great Vibes', cursive",
-                fontSize: '2.2rem',
+                fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
                 fontWeight: 400,
                 letterSpacing: '0.02em',
-                textShadow: '0 2px 20px rgba(0,0,0,0.6)',
+                textShadow: '0 2px 25px rgba(0,0,0,0.7)',
                 display: 'inline'
               }}>
                 Shin Gyeong-ryun
@@ -424,13 +436,13 @@ END:VCALENDAR`;
             <motion.p
               style={{
                 fontFamily: "'Pretendard', -apple-system, sans-serif",
-                fontSize: '0.9rem',
+                fontSize: 'clamp(0.8rem, 2.5vw, 1rem)',
                 fontWeight: 400,
                 letterSpacing: '0.1em',
-                marginBottom: '2rem',
-                textShadow: '0 1px 15px rgba(0,0,0,0.6)'
+                marginBottom: '1.5rem',
+                textShadow: '0 1px 20px rgba(0,0,0,0.7)'
               }}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
@@ -441,14 +453,14 @@ END:VCALENDAR`;
             <motion.div
               style={{
                 fontFamily: "'Pretendard', -apple-system, sans-serif",
-                fontSize: '1.3rem',
+                fontSize: 'clamp(1.1rem, 3.5vw, 1.4rem)',
                 fontWeight: 600,
                 letterSpacing: '0.08em',
-                marginBottom: '0.5rem',
-                textShadow: '0 2px 15px rgba(0,0,0,0.6)'
+                marginBottom: '0.4rem',
+                textShadow: '0 2px 20px rgba(0,0,0,0.7)'
               }}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.2 }}
             >
               2026. 4. 18 (Sat) PM 1
@@ -458,24 +470,24 @@ END:VCALENDAR`;
             <motion.p
               style={{
                 fontFamily: "'Pretendard', -apple-system, sans-serif",
-                fontSize: '0.95rem',
+                fontSize: 'clamp(0.85rem, 2.5vw, 1rem)',
                 fontWeight: 400,
                 letterSpacing: '0.05em',
-                textShadow: '0 1px 15px rgba(0,0,0,0.6)'
+                textShadow: '0 1px 20px rgba(0,0,0,0.7)'
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.6 }}
+              transition={{ duration: 0.8, delay: 1.5 }}
             >
               청주 에스가든 웨딩 컨벤션
             </motion.p>
           </motion.div>
 
-          {/* 스크롤 안내 */}
+          {/* 스크롤 안내 - 마스크 위에 */}
           <motion.div
             style={{
               position: 'absolute',
-              bottom: '2rem',
+              bottom: '2.5rem',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 20,
@@ -483,7 +495,7 @@ END:VCALENDAR`;
               flexDirection: 'column',
               alignItems: 'center',
               gap: '0.5rem',
-              opacity: useTransform(heroProgress, [0, 0.2], [1, 0])
+              opacity: useTransform(heroProgress, [0, 0.15], [1, 0])
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -491,46 +503,21 @@ END:VCALENDAR`;
           >
             <span style={{
               fontFamily: "'Pretendard', sans-serif",
-              fontSize: '0.65rem',
-              color: 'rgba(255,255,255,0.7)',
-              letterSpacing: '0.2em',
-              fontWeight: 300
+              fontSize: '0.6rem',
+              color: 'rgba(255,255,255,0.8)',
+              letterSpacing: '0.25em',
+              fontWeight: 400
             }}>
               SCROLL
             </span>
             <motion.div
-              animate={{ y: [0, 6, 0] }}
+              animate={{ y: [0, 5, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             >
-              <svg style={{ width: '1.2rem', height: '1.2rem', color: 'rgba(255,255,255,0.7)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              <svg style={{ width: '1rem', height: '1rem', color: 'rgba(255,255,255,0.8)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </motion.div>
-          </motion.div>
-
-          {/* 스크롤 진행바 */}
-          <motion.div
-            style={{
-              position: 'absolute',
-              bottom: '1rem',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '50px',
-              height: '3px',
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: '2px',
-              overflow: 'hidden'
-            }}
-          >
-            <motion.div
-              style={{
-                height: '100%',
-                backgroundColor: 'rgba(255,255,255,0.8)',
-                borderRadius: '2px',
-                scaleX: heroProgress,
-                transformOrigin: 'left'
-              }}
-            />
           </motion.div>
         </div>
       </section>
