@@ -339,14 +339,14 @@ END:VCALENDAR`;
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          backgroundColor: '#E5E1D8'
+          backgroundColor: '#1a1a1a'
         }}>
-          {/* 베이지 오버레이 - 처음에만 보임 */}
+          {/* 검정 오버레이 - 초기 상태 */}
           <motion.div
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundColor: '#E5E1D8',
+              backgroundColor: '#000000',
               zIndex: 3,
               opacity: blackOverlayOpacity,
               pointerEvents: 'none'
@@ -375,15 +375,15 @@ END:VCALENDAR`;
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain',
+                objectFit: 'cover',
                 objectPosition: 'center center'
               }}
             />
-            {/* 베이지 오버레이 - 배경색과 자연스럽게 연결 */}
+            {/* 어두운 오버레이 - 텍스트 가독성 */}
             <div style={{
               position: 'absolute',
               inset: 0,
-              background: 'linear-gradient(to bottom, rgba(229,225,216,0.3) 0%, rgba(229,225,216,0) 30%, rgba(229,225,216,0) 70%, rgba(229,225,216,0.5) 100%)',
+              backgroundColor: 'rgba(0,0,0,0.25)',
               pointerEvents: 'none'
             }} />
           </motion.div>
@@ -395,12 +395,8 @@ END:VCALENDAR`;
               zIndex: 10,
               textAlign: 'center',
               color: 'white',
-              padding: '2rem 2.5rem',
-              y: textY,
-              backgroundColor: 'rgba(0,0,0,0.35)',
-              borderRadius: '1rem',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)'
+              padding: '2rem',
+              y: textY
             }}
           >
             {/* 영문 타이틀 - La Paloma (세로 배치) */}
@@ -421,7 +417,7 @@ END:VCALENDAR`;
                 fontSize: 'clamp(1.5rem, 5vw, 2.4rem)',
                 fontWeight: 400,
                 letterSpacing: '0.02em',
-                textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)',
                 display: 'block',
                 whiteSpace: 'nowrap'
               }}>
@@ -431,7 +427,7 @@ END:VCALENDAR`;
                 fontFamily: "'La Paloma', 'Great Vibes', cursive",
                 fontSize: 'clamp(1rem, 2.5vw, 1.4rem)',
                 fontWeight: 400,
-                textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)',
                 display: 'block'
               }}>
                 &
@@ -441,7 +437,7 @@ END:VCALENDAR`;
                 fontSize: 'clamp(1.5rem, 5vw, 2.4rem)',
                 fontWeight: 400,
                 letterSpacing: '0.02em',
-                textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)',
                 display: 'block',
                 whiteSpace: 'nowrap'
               }}>
@@ -457,7 +453,7 @@ END:VCALENDAR`;
                 fontWeight: 400,
                 letterSpacing: '0.08em',
                 marginBottom: '1.5rem',
-                textShadow: '0 1px 8px rgba(0,0,0,0.4)'
+                textShadow: '0 2px 15px rgba(0,0,0,0.7), 0 0 30px rgba(0,0,0,0.4)'
               }}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -474,7 +470,7 @@ END:VCALENDAR`;
                 fontWeight: 400,
                 letterSpacing: '0.05em',
                 marginBottom: '0.4rem',
-                textShadow: '0 1px 8px rgba(0,0,0,0.4)'
+                textShadow: '0 2px 15px rgba(0,0,0,0.7), 0 0 30px rgba(0,0,0,0.4)'
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -490,7 +486,7 @@ END:VCALENDAR`;
                 fontSize: 'clamp(0.95rem, 3vw, 1.15rem)',
                 fontWeight: 400,
                 letterSpacing: '0.03em',
-                textShadow: '0 1px 8px rgba(0,0,0,0.4)'
+                textShadow: '0 2px 15px rgba(0,0,0,0.7), 0 0 30px rgba(0,0,0,0.4)'
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
