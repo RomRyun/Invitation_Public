@@ -3,7 +3,25 @@
 /* La Paloma - 영문 웨딩 타이틀용 */
 @font-face {
   font-family: 'La Paloma';
-  src: url('/src/font/La Paloma.ttf') format('truetype');
+  src: url('/src/assets/font/La Paloma.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 나눔손글씨 예당체 - 선명한 한글 */
+@font-face {
+  font-family: 'NanumYeDang';
+  src: url('/src/assets/font/나눔손글씨 예당체.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 나눔손글씨 예쁜 민경체 */
+@font-face {
+  font-family: 'NanumMinkyung';
+  src: url('/src/assets/font/나눔손글씨 예쁜 민경체.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
