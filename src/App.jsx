@@ -57,11 +57,8 @@ function App() {
   // 목차 데이터
   const menuItems = [
     { id: 'greeting', label: '인사말' },
-    { id: 'story', label: '우리의 이야기' },
     { id: 'gallery', label: '갤러리' },
     { id: 'location', label: '오시는 길' },
-    // { id: 'dday', label: 'D-Day' },
-    // { id: 'calendar', label: '캘린더' },
     { id: 'account', label: '마음 전하실 곳' },
   ];
 
@@ -537,7 +534,7 @@ END:VCALENDAR`;
         </div>
       </section>
 
-      {/* 인사말 Section */}
+      {/* 인사말 + 픽셀아트 통합 Section */}
       <section id="greeting" className="py-16">
         <div className="container">
           <motion.div
@@ -555,26 +552,59 @@ END:VCALENDAR`;
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {/* 섹션 타이틀 - reveal 효과 */}
+            {/* 픽셀아트 이미지 - 상단 배치 */}
+            <motion.div 
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: '2rem'
+              }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ 
+                duration: 0.8, 
+                delay: 0.2,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+            >
+              <motion.img 
+                src={config.pixelArt}
+                alt="픽셀아트" 
+                style={{
+                  maxWidth: '80%',
+                  height: 'auto',
+                  borderRadius: '0.75rem'
+                }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            </motion.div>
+
+            {/* 섹션 타이틀 */}
             <motion.h2 
               style={{
                 fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
                 fontSize: '1.5rem',
                 fontWeight: 400,
                 textAlign: 'center',
-                marginBottom: '2rem',
+                marginBottom: '1.5rem',
                 color: '#374151',
                 letterSpacing: '0.15em'
               }}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
             >
               {config.sectionTitles.greeting}
             </motion.h2>
             
-            {/* 인사말 텍스트 - 한 줄씩 순차 reveal */}
+            {/* 인사말 텍스트 */}
             <div style={{ 
               display: 'flex',
               flexDirection: 'column',
@@ -584,7 +614,6 @@ END:VCALENDAR`;
               fontSize: '0.9375rem',
               textAlign: 'center'
             }}>
-              {/* 메인 메시지 - 각 줄이 순차적으로 나타남 */}
               <div style={{ fontWeight: 300 }}>
                 {config.greeting.message.map((line, i) => (
                   <motion.p 
@@ -595,7 +624,7 @@ END:VCALENDAR`;
                     viewport={{ once: true }}
                     transition={{ 
                       duration: 0.5, 
-                      delay: 0.3 + (i * 0.1),
+                      delay: 0.4 + (i * 0.1),
                       ease: "easeOut"
                     }}
                   >
@@ -604,7 +633,6 @@ END:VCALENDAR`;
                 ))}
               </div>
               
-              {/* 서브 메시지 - 약간의 딜레이 후 나타남 */}
               <div style={{ fontWeight: 300, paddingTop: '0.5rem' }}>
                 {config.greeting.subMessage.map((line, i) => (
                   <motion.p 
@@ -615,7 +643,7 @@ END:VCALENDAR`;
                     viewport={{ once: true }}
                     transition={{ 
                       duration: 0.5, 
-                      delay: 0.5 + (config.greeting.message.length * 0.1) + (i * 0.1),
+                      delay: 0.6 + (i * 0.1),
                       ease: "easeOut"
                     }}
                   >
@@ -625,10 +653,10 @@ END:VCALENDAR`;
               </div>
             </div>
             
-            {/* 부모님 소개 - 구분선 애니메이션 + 순차 등장 */}
+            {/* 부모님 소개 */}
             <motion.div 
               style={{
-                marginTop: '2.5rem',
+                marginTop: '2rem',
                 paddingTop: '1.5rem',
                 borderTop: '1px solid rgba(229, 231, 235, 0.6)',
                 textAlign: 'center',
@@ -662,160 +690,6 @@ END:VCALENDAR`;
                 {config.bride.fatherName} · {config.bride.motherName}의 {config.bride.relation} <strong style={{ fontWeight: 500 }}>{config.bride.name}</strong>
               </motion.p>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 픽셀아트 Section - 강화된 애니메이션 */}
-      <section id="story" className="py-16">
-        <div className="container">
-          <motion.div
-            style={{
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-              borderRadius: '1rem',
-              padding: '2rem',
-              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.8)',
-              overflow: 'hidden'
-            }}
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            {/* 섹션 타이틀 - reveal 효과 */}
-            <motion.h2 
-              style={{
-                fontFamily: "'MapoFlowerIsland', 'Gowun Batang', serif",
-                fontSize: '1.5rem',
-                fontWeight: 400,
-                textAlign: 'center',
-                marginBottom: '2rem',
-                color: '#374151',
-                letterSpacing: '0.15em'
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              {config.sectionTitles.story}
-            </motion.h2>
-            
-            {/* 픽셀아트 이미지 - scale-up 등장 효과 */}
-            <motion.div 
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '200px'
-              }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ 
-                duration: 0.8, 
-                delay: 0.3,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
-            >
-              <motion.img 
-                src={config.pixelArt}
-                alt="픽셀아트" 
-                style={{
-                  maxWidth: '100%',
-                  height: 'auto',
-                  borderRadius: '0.75rem',
-                  boxShadow: '0 4px 16px 0 rgba(0,0,0,0.08)'
-                }}
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  const errorDiv = e.target.nextElementSibling;
-                  if (errorDiv) {
-                    errorDiv.style.display = 'block';
-                  }
-                }}
-              />
-              <div style={{
-                display: 'none',
-                textAlign: 'center',
-                color: '#6b7280',
-                padding: '2rem 0',
-                fontSize: '0.875rem',
-                fontWeight: 300,
-                width: '100%'
-              }}>
-                <p>픽셀아트 이미지를 준비해주세요</p>
-                <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', color: '#9ca3af' }}>/public/pixel-art.gif 파일을 추가하세요</p>
-              </div>
-            </motion.div>
-            
-            {/* 우리의 이야기 텍스트 - 순차 reveal */}
-            {config.ourStory && config.ourStory.length > 0 && (
-              <motion.div 
-                style={{ 
-                  marginTop: '2rem',
-                  paddingTop: '1.5rem',
-                  borderTop: '1px solid rgba(229, 231, 235, 0.6)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1.5rem'
-                }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                {config.ourStory.map((story, idx) => (
-                  <motion.div 
-                    key={idx} 
-                    style={{ textAlign: 'center' }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.6 + (idx * 0.2) }}
-                  >
-                    <div style={{ 
-                      color: '#4b5563', 
-                      fontSize: '0.9375rem', 
-                      lineHeight: 1.8,
-                      fontWeight: 300,
-                      fontStyle: 'italic'
-                    }}>
-                      {story.text.map((line, lineIdx) => (
-                        <motion.p 
-                          key={lineIdx}
-                          initial={{ opacity: 0 }}
-                          whileInView={{ opacity: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.4, delay: 0.7 + (idx * 0.2) + (lineIdx * 0.1) }}
-                        >
-                          {line}
-                        </motion.p>
-                      ))}
-                    </div>
-                    <motion.p 
-                      style={{ 
-                        marginTop: '0.75rem', 
-                        color: '#6b7280', 
-                        fontSize: '0.8125rem',
-                        fontWeight: 400
-                      }}
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.9 + (idx * 0.2) }}
-                    >
-                      — {story.author}
-                    </motion.p>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
           </motion.div>
         </div>
       </section>
