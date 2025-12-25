@@ -865,11 +865,11 @@ END:VCALENDAR`;
               fontSize: config.gallery.titleSize,
               fontWeight: 400,
               textAlign: 'center',
-              marginBottom: '2rem',
-              color: '#374151',
-              letterSpacing: '0.15em'
+              marginBottom: '1.5rem',
+              color: theme.accentSolid,
+              letterSpacing: '0.3em'
             }}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -1139,6 +1139,25 @@ END:VCALENDAR`;
       {/* 오시는 길 Section - 강화된 애니메이션 */}
       <section id="location" className="py-16">
         <div className="container">
+          {/* 섹션 타이틀 - 프레임 밖 */}
+          <motion.h2 
+            style={{
+              fontFamily: config.location.titleFont,
+              fontSize: config.location.titleSize,
+              fontWeight: 400,
+              textAlign: 'center',
+              marginBottom: '1.5rem',
+              color: theme.accentSolid,
+              letterSpacing: '0.3em'
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {config.location.title}
+          </motion.h2>
+          
           <motion.div
             style={{
               backdropFilter: 'blur(24px)',
@@ -1154,24 +1173,6 @@ END:VCALENDAR`;
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {/* 섹션 타이틀 */}
-            <motion.h2 
-              style={{
-                fontFamily: config.location.titleFont,
-                fontSize: config.location.titleSize,
-                fontWeight: 400,
-                textAlign: 'center',
-                marginBottom: '2rem',
-                color: '#374151',
-                letterSpacing: '0.15em'
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              {config.location.title}
-            </motion.h2>
             
             {/* 장소 정보 - 순차 등장 */}
             <motion.div 
@@ -1407,8 +1408,8 @@ END:VCALENDAR`;
               fontWeight: 400,
               textAlign: 'center',
               marginBottom: '1.5rem',
-              color: '#374151',
-              letterSpacing: '0.15em'
+              color: theme.accentSolid,
+              letterSpacing: '0.3em'
             }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

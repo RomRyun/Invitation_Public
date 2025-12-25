@@ -111,7 +111,7 @@ export const config = {
   // 4. 갤러리 섹션
   // ============================================================
   gallery: {
-    title: '갤러리',
+    title: '갤 러 리',
     titleFont: "'MapoFlowerIsland', 'Gowun Batang', serif",
     titleSize: '1.5rem',
     images: [
@@ -133,7 +133,7 @@ export const config = {
   // 5. 오시는 길 섹션
   // ============================================================
   location: {
-    title: '오시는 길',
+    title: '오 시 는  길',
     titleFont: "'MapoFlowerIsland', 'Gowun Batang', serif",
     titleSize: '1.5rem',
     
@@ -184,7 +184,7 @@ export const config = {
   // 7. 계좌 섹션
   // ============================================================
   account: {
-    title: '마음 전하실 곳',
+    title: '마 음  전 하 실  곳',
     titleFont: "'MapoFlowerIsland', 'Gowun Batang', serif",
     titleSize: '1.5rem',
     
