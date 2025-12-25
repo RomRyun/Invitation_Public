@@ -552,7 +552,7 @@ END:VCALENDAR`;
               textAlign: 'center',
               color: 'white',
               padding: '2rem',
-              marginTop: '-80px',
+              marginTop: '-140px',
               y: textY
             }}
           >
