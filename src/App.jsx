@@ -89,30 +89,48 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Hero 페이지 자동 스크롤 (스크롤 멈춤 감지)
+  // Hero 페이지 스토퍼 + 자동 스크롤
   useEffect(() => {
     let scrollTimeout;
-    let isScrolling = false;
+    let heroCompleted = false; // Hero 끝까지 도달했는지 여부
+    
+    const heroEnd = () => window.innerHeight; // Hero 끝 지점 (100vh)
     
     const handleScrollEnd = () => {
-      isScrolling = false;
-      
-      const heroHeight = window.innerHeight * 2; // 200vh
-      const heroEnd = window.innerHeight; // Hero 끝 지점 (100vh)
       const scrollY = window.scrollY;
+      const end = heroEnd();
       
-      // Hero 페이지 내에 있고, 초기 상태(0)도 끝 상태(heroEnd)도 아닌 경우
-      if (scrollY > 10 && scrollY < heroEnd - 10) {
-        // 끝 상태로 스무스 스크롤 (0.5초)
+      // Hero 페이지 내에 있고, 초기 상태(0)도 끝 상태도 아닌 경우
+      if (!heroCompleted && scrollY > 10 && scrollY < end - 10) {
+        // 끝 상태로 스무스 스크롤
         window.scrollTo({
-          top: heroEnd,
+          top: end,
           behavior: 'smooth'
         });
       }
     };
     
     const onScroll = () => {
-      isScrolling = true;
+      const scrollY = window.scrollY;
+      const end = heroEnd();
+      
+      // 맨 위로 돌아오면 리셋
+      if (scrollY <= 5) {
+        heroCompleted = false;
+      }
+      
+      // Hero 끝에 도달하면 완료 표시
+      if (scrollY >= end - 5) {
+        heroCompleted = true;
+      }
+      
+      // 스토퍼: Hero 완료 전에는 heroEnd를 넘지 못하게
+      if (!heroCompleted && scrollY > end) {
+        window.scrollTo({ top: end, behavior: 'auto' });
+        heroCompleted = true;
+        return;
+      }
+      
       clearTimeout(scrollTimeout);
       // 스크롤 멈춘 후 200ms 대기
       scrollTimeout = setTimeout(handleScrollEnd, 200);
