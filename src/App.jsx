@@ -448,7 +448,7 @@ END:VCALENDAR`;
         style={{
           height: '200vh',
           position: 'relative',
-          scrollSnapAlign: 'start'
+          scrollSnapAlign: 'start end'
         }}
       >
         <div style={{
@@ -659,7 +659,7 @@ END:VCALENDAR`;
       </section>
 
       {/* 인사말 + 픽셀아트 통합 Section */}
-      <section id="greeting" className="py-16" style={{ scrollSnapAlign: 'start' }}>
+      <section id="greeting" className="py-16">
         <div className="container">
           <motion.div
             style={{
