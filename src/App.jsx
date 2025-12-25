@@ -157,7 +157,7 @@ function App() {
       }
       
       clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScrollEnd, 200);
+      scrollTimeout = setTimeout(handleScrollEnd, 50);
     };
     
     // wheel/touch 이벤트로 스크롤 제한 (더 강력한 스토퍼)
