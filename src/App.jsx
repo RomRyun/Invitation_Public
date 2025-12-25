@@ -94,8 +94,37 @@ function App() {
   
   useEffect(() => {
     let scrollTimeout;
+    let isAnimating = false;
     
     const heroEnd = () => window.innerHeight; // Hero 끝 지점 (100vh)
+    
+    // 커스텀 스무스 스크롤 (duration 조절 가능)
+    const smoothScrollTo = (targetY, duration = 750) => {
+      if (isAnimating) return;
+      isAnimating = true;
+      
+      const startY = window.scrollY;
+      const distance = targetY - startY;
+      const startTime = performance.now();
+      
+      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+      
+      const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutCubic(progress);
+        
+        window.scrollTo(0, startY + distance * easedProgress);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          isAnimating = false;
+        }
+      };
+      
+      requestAnimationFrame(animate);
+    };
     
     const handleScrollEnd = () => {
       const scrollY = window.scrollY;
@@ -103,11 +132,8 @@ function App() {
       
       // Hero 페이지 내에 있고, 초기 상태(0)도 끝 상태도 아닌 경우
       if (!heroCompleted && scrollY > 10 && scrollY < end - 10) {
-        // 끝 상태로 스무스 스크롤
-        window.scrollTo({
-          top: end,
-          behavior: 'smooth'
-        });
+        // 끝 상태로 스무스 스크롤 (750ms = 기존의 약 1.5배)
+        smoothScrollTo(end, 750);
       }
     };
     
