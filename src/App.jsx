@@ -89,6 +89,43 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Hero 페이지 자동 스크롤 (스크롤 멈춤 감지)
+  useEffect(() => {
+    let scrollTimeout;
+    let isScrolling = false;
+    
+    const handleScrollEnd = () => {
+      isScrolling = false;
+      
+      const heroHeight = window.innerHeight * 2; // 200vh
+      const heroEnd = window.innerHeight; // Hero 끝 지점 (100vh)
+      const scrollY = window.scrollY;
+      
+      // Hero 페이지 내에 있고, 초기 상태(0)도 끝 상태(heroEnd)도 아닌 경우
+      if (scrollY > 10 && scrollY < heroEnd - 10) {
+        // 끝 상태로 스무스 스크롤 (0.5초)
+        window.scrollTo({
+          top: heroEnd,
+          behavior: 'smooth'
+        });
+      }
+    };
+    
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimeout);
+      // 스크롤 멈춘 후 200ms 대기
+      scrollTimeout = setTimeout(handleScrollEnd, 200);
+    };
+    
+    window.addEventListener('scroll', onScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
   // 계좌번호 복사 함수
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -447,8 +484,7 @@ END:VCALENDAR`;
         ref={heroRef}
         style={{
           height: '200vh',
-          position: 'relative',
-          scrollSnapAlign: 'start end'
+          position: 'relative'
         }}
       >
         <div style={{
