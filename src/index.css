@@ -233,8 +233,8 @@ html {
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Hero 섹션 자동 스크롤 스냅 */
-  scroll-snap-type: y proximity;
+  /* Hero 섹션 자동 스크롤 스냅 (강제) */
+  scroll-snap-type: y mandatory;
 }
 
 /* 스크롤바 스타일링 */
