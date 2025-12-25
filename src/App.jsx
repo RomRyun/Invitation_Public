@@ -89,19 +89,19 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Hero 페이지 스토퍼 + 자동 스크롤
+  // Hero 페이지 자동 스크롤
   const [heroCompleted, setHeroCompleted] = useState(false);
+  const isAnimatingRef = useRef(false);
   
   useEffect(() => {
     let scrollTimeout;
-    let isAnimating = false;
     
-    const heroEnd = () => window.innerHeight; // Hero 끝 지점 (100vh)
+    const heroEnd = () => window.innerHeight;
     
-    // 커스텀 스무스 스크롤 (duration 조절 가능)
-    const smoothScrollTo = (targetY, duration = 750) => {
-      if (isAnimating) return;
-      isAnimating = true;
+    // 커스텀 스무스 스크롤
+    const smoothScrollTo = (targetY, duration) => {
+      if (isAnimatingRef.current) return;
+      isAnimatingRef.current = true;
       
       const startY = window.scrollY;
       const distance = targetY - startY;
@@ -111,13 +111,13 @@ function App() {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // 등속도 (linear)
         window.scrollTo(0, startY + distance * progress);
         
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          isAnimating = false;
+          isAnimatingRef.current = false;
+          setHeroCompleted(true);
         }
       };
       
@@ -125,17 +125,20 @@ function App() {
     };
     
     const handleScrollEnd = () => {
+      if (isAnimatingRef.current) return;
+      
       const scrollY = window.scrollY;
       const end = heroEnd();
       
       // Hero 페이지 내에 있고, 초기 상태(0)도 끝 상태도 아닌 경우
       if (!heroCompleted && scrollY > 10 && scrollY < end - 10) {
-        // 끝 상태로 스무스 스크롤 (2500ms)
         smoothScrollTo(end, 2500);
       }
     };
     
     const onScroll = () => {
+      if (isAnimatingRef.current) return;
+      
       const scrollY = window.scrollY;
       const end = heroEnd();
       
@@ -149,26 +152,25 @@ function App() {
         setHeroCompleted(true);
       }
       
-      // 스토퍼: Hero 완료 전에는 heroEnd를 넘지 못하게
-      if (!heroCompleted && scrollY > end + 50) {
+      // 스토퍼: Hero 완료 전에는 heroEnd를 많이 넘지 못하게
+      if (!heroCompleted && scrollY > end + 100) {
         window.scrollTo({ top: end, behavior: 'auto' });
         setHeroCompleted(true);
         return;
       }
       
       clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScrollEnd, 50);
+      scrollTimeout = setTimeout(handleScrollEnd, 100);
     };
     
-    // wheel/touch 이벤트로 스크롤 제한 (더 강력한 스토퍼)
+    // wheel/touch 이벤트로 스크롤 제한
     const blockScroll = (e) => {
-      if (heroCompleted) return;
+      if (heroCompleted || isAnimatingRef.current) return;
       
       const scrollY = window.scrollY;
       const end = heroEnd();
       
-      // Hero 끝을 넘으려고 할 때 막기
-      if (scrollY >= end) {
+      if (scrollY >= end + 50) {
         e.preventDefault();
         window.scrollTo({ top: end, behavior: 'auto' });
         setHeroCompleted(true);
