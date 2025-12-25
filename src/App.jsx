@@ -509,43 +509,21 @@ END:VCALENDAR`;
             }}
           />
 
-          {/* 배경 이미지 - Zoom out 효과 + 꽃잎 마스크 */}
+          {/* 배경 이미지 - Zoom out 효과 + 먹물 번짐 마스크 */}
           <motion.div
             style={{
               position: 'absolute',
               width: '100%',
               height: '100%',
               scale: imageScale,
-              // 꽃잎이 퍼지는 느낌의 마스크 (8개 꽃잎)
+              // 먹물이 부드럽게 번지는 느낌 (넓은 그라데이션)
               WebkitMaskImage: useTransform(maskSize, (size) => {
                 const s = Math.max(0, size);
-                const fade = s + 10;
-                return `
-                  radial-gradient(ellipse 40% 70% at 50% 15%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 70% 40% at 85% 50%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 40% 70% at 50% 85%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 70% 40% at 15% 50%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 75% 25%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 75% 75%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 25% 75%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 25% 25%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(circle at 50% 50%, black ${s * 0.7}%, transparent ${s * 0.7 + 8}%)
-                `;
+                return `radial-gradient(circle at 50% 50%, black ${s * 0.6}%, rgba(0,0,0,0.7) ${s * 0.8}%, rgba(0,0,0,0.3) ${s}%, transparent ${s + 25}%)`;
               }),
               maskImage: useTransform(maskSize, (size) => {
                 const s = Math.max(0, size);
-                const fade = s + 10;
-                return `
-                  radial-gradient(ellipse 40% 70% at 50% 15%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 70% 40% at 85% 50%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 40% 70% at 50% 85%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 70% 40% at 15% 50%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 75% 25%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 75% 75%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 25% 75%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(ellipse 50% 50% at 25% 25%, black ${s}%, transparent ${fade}%),
-                  radial-gradient(circle at 50% 50%, black ${s * 0.7}%, transparent ${s * 0.7 + 8}%)
-                `;
+                return `radial-gradient(circle at 50% 50%, black ${s * 0.6}%, rgba(0,0,0,0.7) ${s * 0.8}%, rgba(0,0,0,0.3) ${s}%, transparent ${s + 25}%)`;
               })
             }}
           >
