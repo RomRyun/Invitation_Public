@@ -221,13 +221,13 @@ export const config = {
       holder: '신경륜',
     },
     brideFather: {
-      bank: '',
-      accountNumber: '',
+      bank: '농협',
+      accountNumber: '401145-51-016954',
       holder: '신락현',
     },
     brideMother: {
-      bank: '',
-      accountNumber: '',
+      bank: '우리',
+      accountNumber: '2761-9679-502001',
       holder: '곽광숙',
     },
   },

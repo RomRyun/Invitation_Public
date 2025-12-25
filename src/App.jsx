@@ -682,39 +682,6 @@ END:VCALENDAR`;
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {/* 픽셀아트 이미지 - 상단 배치 */}
-            <motion.div 
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: '2rem'
-              }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ 
-                duration: 0.8, 
-                delay: 0.2,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
-            >
-              <motion.img 
-                src={config.greeting.pixelArt}
-                alt="픽셀아트" 
-                style={{
-                  maxWidth: '80%',
-                  height: 'auto',
-                  borderRadius: '0.75rem'
-                }}
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
-            </motion.div>
-
             {/* 육행시 (이아롬 + 신경륜) */}
             <div style={{ 
               display: 'flex',
@@ -1149,21 +1116,6 @@ END:VCALENDAR`;
               >
                 {config.wedding.year} {config.wedding.monthDay} {config.wedding.dayOfWeek} {config.wedding.timeText}
               </motion.p>
-              <motion.div 
-                style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: '#4b5563', fontWeight: 300 }}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.6 }}
-              >
-                <p style={{ marginBottom: '0.75rem', fontWeight: 400 }}>{config.location.addressLabel}</p>
-                <p style={{ lineHeight: 1.625 }}>
-                  {config.location.venue.address}<br />
-                  {config.location.venue.addressDetail && (
-                    <span style={{ color: '#6b7280' }}>{config.location.venue.addressDetail}</span>
-                  )}
-                </p>
-              </motion.div>
             </motion.div>
             
             {/* 지도 이미지 - zoom-in 효과 */}
