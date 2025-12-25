@@ -107,15 +107,12 @@ function App() {
       const distance = targetY - startY;
       const startTime = performance.now();
       
-      // easeOutCubic: 빠르게 시작 → 천천히 끝 (자연스러운 감속)
-      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-      
       const animate = (currentTime) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = easeOutCubic(progress);
         
-        window.scrollTo(0, startY + distance * easedProgress);
+        // 등속도 (linear)
+        window.scrollTo(0, startY + distance * progress);
         
         if (progress < 1) {
           requestAnimationFrame(animate);
