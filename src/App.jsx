@@ -447,7 +447,8 @@ END:VCALENDAR`;
         ref={heroRef}
         style={{
           height: '200vh',
-          position: 'relative'
+          position: 'relative',
+          scrollSnapAlign: 'start'
         }}
       >
         <div style={{
@@ -658,7 +659,7 @@ END:VCALENDAR`;
       </section>
 
       {/* 인사말 + 픽셀아트 통합 Section */}
-      <section id="greeting" className="py-16">
+      <section id="greeting" className="py-16" style={{ scrollSnapAlign: 'start' }}>
         <div className="container">
           <motion.div
             style={{

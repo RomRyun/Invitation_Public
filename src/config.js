@@ -217,7 +217,7 @@ export const config = {
     },
     bride: {
       bank: '국민은행',
-      accountNumber: '404015-2900197-01',
+      accountNumber: '746702-01-202912',
       holder: '신경륜',
     },
     brideFather: {
