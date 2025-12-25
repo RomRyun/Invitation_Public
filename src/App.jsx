@@ -90,9 +90,10 @@ function App() {
   }, []);
 
   // Hero 페이지 스토퍼 + 자동 스크롤
+  const [heroCompleted, setHeroCompleted] = useState(false);
+  
   useEffect(() => {
     let scrollTimeout;
-    let heroCompleted = false; // Hero 끝까지 도달했는지 여부
     
     const heroEnd = () => window.innerHeight; // Hero 끝 지점 (100vh)
     
@@ -116,33 +117,51 @@ function App() {
       
       // 맨 위로 돌아오면 리셋
       if (scrollY <= 5) {
-        heroCompleted = false;
+        setHeroCompleted(false);
       }
       
       // Hero 끝에 도달하면 완료 표시
       if (scrollY >= end - 5) {
-        heroCompleted = true;
+        setHeroCompleted(true);
       }
       
       // 스토퍼: Hero 완료 전에는 heroEnd를 넘지 못하게
       if (!heroCompleted && scrollY > end) {
         window.scrollTo({ top: end, behavior: 'auto' });
-        heroCompleted = true;
+        setHeroCompleted(true);
         return;
       }
       
       clearTimeout(scrollTimeout);
-      // 스크롤 멈춘 후 200ms 대기
       scrollTimeout = setTimeout(handleScrollEnd, 200);
     };
     
+    // wheel/touch 이벤트로 스크롤 제한 (더 강력한 스토퍼)
+    const blockScroll = (e) => {
+      if (heroCompleted) return;
+      
+      const scrollY = window.scrollY;
+      const end = heroEnd();
+      
+      // Hero 끝을 넘으려고 할 때 막기
+      if (scrollY >= end - 5) {
+        e.preventDefault();
+        window.scrollTo({ top: end, behavior: 'auto' });
+        setHeroCompleted(true);
+      }
+    };
+    
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', blockScroll, { passive: false });
+    window.addEventListener('touchmove', blockScroll, { passive: false });
     
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('wheel', blockScroll);
+      window.removeEventListener('touchmove', blockScroll);
       clearTimeout(scrollTimeout);
     };
-  }, []);
+  }, [heroCompleted]);
 
   // 계좌번호 복사 함수
   const copyToClipboard = (text, type) => {
