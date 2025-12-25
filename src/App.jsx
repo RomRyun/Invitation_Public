@@ -750,85 +750,95 @@ END:VCALENDAR`;
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {/* 신랑 신부 사진 */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '1rem',
-              marginBottom: '1.5rem'
-            }}>
-              {/* 신랑 */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <div style={{
-                  borderRadius: '0.5rem',
-                  overflow: 'hidden',
-                  marginBottom: '0.75rem',
-                  aspectRatio: '3/4'
-                }}>
-                  <img 
-                    src={config.couple.groomImage}
-                    alt="신랑"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
-                    }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                </div>
-                <p style={{
-                  textAlign: 'center',
-                  fontSize: '0.8125rem',
-                  color: '#4b5563',
-                  fontWeight: 300
-                }}>
-                  {config.groom.fatherName} · {config.groom.motherName}의 {config.groom.relation} <strong style={{ fontWeight: 500 }}>{config.groom.name}</strong>
-                </p>
-              </motion.div>
-              
-              {/* 신부 */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
-                <div style={{
-                  borderRadius: '0.5rem',
-                  overflow: 'hidden',
-                  marginBottom: '0.75rem',
-                  aspectRatio: '3/4'
-                }}>
-                  <img 
-                    src={config.couple.brideImage}
-                    alt="신부"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
-                    }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                </div>
-                <p style={{
-                  textAlign: 'center',
-                  fontSize: '0.8125rem',
-                  color: '#4b5563',
-                  fontWeight: 300
-                }}>
-                  {config.bride.fatherName} · {config.bride.motherName}의 {config.bride.relation} <strong style={{ fontWeight: 500 }}>{config.bride.name}</strong>
-                </p>
-              </motion.div>
-            </div>
+            {/* 신랑 사진 + 정보 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              style={{ marginBottom: '2rem' }}
+            >
+              {/* 신랑 사진 - 상하 10% 프레임 */}
+              <div style={{
+                overflow: 'hidden',
+                marginBottom: '1rem',
+                position: 'relative',
+                height: '280px'
+              }}>
+                <img 
+                  src={config.couple.groomImage}
+                  alt="신랑"
+                  style={{
+                    width: '100%',
+                    height: '125%',
+                    objectFit: 'cover',
+                    objectPosition: 'center 15%',
+                    position: 'absolute',
+                    top: '-12.5%'
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+              {/* 신랑 정보 */}
+              <p style={{
+                textAlign: 'center',
+                fontSize: '0.9rem',
+                color: '#4b5563',
+                fontWeight: 300,
+                lineHeight: 1.6
+              }}>
+                {config.groom.fatherName} · {config.groom.motherName}의 {config.groom.relation}
+                <br />
+                <strong style={{ fontWeight: 500, fontSize: '1.1rem' }}>{config.groom.name}</strong>
+              </p>
+            </motion.div>
+            
+            {/* 신부 사진 + 정보 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              style={{ marginBottom: '2rem' }}
+            >
+              {/* 신부 사진 - 상하 10% 프레임 */}
+              <div style={{
+                overflow: 'hidden',
+                marginBottom: '1rem',
+                position: 'relative',
+                height: '280px'
+              }}>
+                <img 
+                  src={config.couple.brideImage}
+                  alt="신부"
+                  style={{
+                    width: '100%',
+                    height: '125%',
+                    objectFit: 'cover',
+                    objectPosition: 'center 15%',
+                    position: 'absolute',
+                    top: '-12.5%'
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+              {/* 신부 정보 */}
+              <p style={{
+                textAlign: 'center',
+                fontSize: '0.9rem',
+                color: '#4b5563',
+                fontWeight: 300,
+                lineHeight: 1.6
+              }}>
+                {config.bride.fatherName} · {config.bride.motherName}의 {config.bride.relation}
+                <br />
+                <strong style={{ fontWeight: 500, fontSize: '1.1rem' }}>{config.bride.name}</strong>
+              </p>
+            </motion.div>
             
             {/* 인사말 메시지 */}
             <div style={{ 
