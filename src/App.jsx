@@ -509,21 +509,38 @@ END:VCALENDAR`;
             }}
           />
 
-          {/* 배경 이미지 - Zoom out 효과 + 먹물 번짐 마스크 */}
+          {/* 배경 이미지 - Zoom out 효과 + 3개의 먹물 번짐 마스크 */}
           <motion.div
             style={{
               position: 'absolute',
               width: '100%',
               height: '100%',
               scale: imageScale,
-              // 먹물이 부드럽게 번지는 느낌 (넓은 그라데이션)
+              // 3개의 먹물이 각각 다른 위치, 속도, 크기로 번지는 효과
               WebkitMaskImage: useTransform(maskSize, (size) => {
                 const s = Math.max(0, size);
-                return `radial-gradient(circle at 50% 50%, black ${s * 0.6}%, rgba(0,0,0,0.7) ${s * 0.8}%, rgba(0,0,0,0.3) ${s}%, transparent ${s + 25}%)`;
+                // 메인 (중앙, 가장 빠름, 가장 큼)
+                const s1 = s * 1.1;
+                // 좌상단 (느림, 작음)
+                const s2 = Math.max(0, s * 0.85 - 5);
+                // 우하단 (중간, 중간)
+                const s3 = Math.max(0, s * 0.95 - 3);
+                return `
+                  radial-gradient(ellipse 55% 60% at 50% 45%, black ${s1 * 0.5}%, rgba(0,0,0,0.6) ${s1 * 0.75}%, rgba(0,0,0,0.2) ${s1}%, transparent ${s1 + 20}%),
+                  radial-gradient(ellipse 40% 45% at 25% 30%, black ${s2 * 0.5}%, rgba(0,0,0,0.5) ${s2 * 0.8}%, transparent ${s2 + 15}%),
+                  radial-gradient(ellipse 45% 50% at 75% 70%, black ${s3 * 0.5}%, rgba(0,0,0,0.5) ${s3 * 0.8}%, transparent ${s3 + 18}%)
+                `;
               }),
               maskImage: useTransform(maskSize, (size) => {
                 const s = Math.max(0, size);
-                return `radial-gradient(circle at 50% 50%, black ${s * 0.6}%, rgba(0,0,0,0.7) ${s * 0.8}%, rgba(0,0,0,0.3) ${s}%, transparent ${s + 25}%)`;
+                const s1 = s * 1.1;
+                const s2 = Math.max(0, s * 0.85 - 5);
+                const s3 = Math.max(0, s * 0.95 - 3);
+                return `
+                  radial-gradient(ellipse 55% 60% at 50% 45%, black ${s1 * 0.5}%, rgba(0,0,0,0.6) ${s1 * 0.75}%, rgba(0,0,0,0.2) ${s1}%, transparent ${s1 + 20}%),
+                  radial-gradient(ellipse 40% 45% at 25% 30%, black ${s2 * 0.5}%, rgba(0,0,0,0.5) ${s2 * 0.8}%, transparent ${s2 + 15}%),
+                  radial-gradient(ellipse 45% 50% at 75% 70%, black ${s3 * 0.5}%, rgba(0,0,0,0.5) ${s3 * 0.8}%, transparent ${s3 + 18}%)
+                `;
               })
             }}
           >
