@@ -223,14 +223,118 @@ function App() {
   // 모달 스와이프 핸들러
   const [modalStartX, setModalStartX] = useState(0);
   const [modalIsDragging, setModalIsDragging] = useState(false);
+  
+  // 핀치 투 줌 관련 state
+  const [zoomScale, setZoomScale] = useState(1);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const isPinchingRef = useRef(false);
+  const lastPinchDistanceRef = useRef(0);
+  const lastTapTimeRef = useRef(0);
+  const panStartRef = useRef({ x: 0, y: 0 });
+  const isPanningRef = useRef(false);
+  
+  // 두 손가락 사이 거리 계산
+  const getPinchDistance = (touches) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
 
   const handleModalTouchStart = (e) => {
-    setModalStartX(e.touches[0].clientX);
-    setModalIsDragging(true);
+    // 핀치 시작 (두 손가락)
+    if (e.touches.length === 2) {
+      isPinchingRef.current = true;
+      isPanningRef.current = false;
+      lastPinchDistanceRef.current = getPinchDistance(e.touches);
+      return;
+    }
+    
+    // 한 손가락 터치
+    if (e.touches.length === 1) {
+      const now = Date.now();
+      const touch = e.touches[0];
+      
+      // 더블 탭 감지 (300ms 이내)
+      if (now - lastTapTimeRef.current < 300) {
+        e.preventDefault();
+        if (zoomScale > 1) {
+          // 확대 상태면 원래 크기로
+          setZoomScale(1);
+          setZoomPosition({ x: 0, y: 0 });
+        } else {
+          // 원래 크기면 2배 확대
+          setZoomScale(2);
+        }
+        lastTapTimeRef.current = 0;
+        return;
+      }
+      lastTapTimeRef.current = now;
+      
+      // 확대 상태에서 패닝 시작
+      if (zoomScale > 1) {
+        isPanningRef.current = true;
+        panStartRef.current = { x: touch.clientX - zoomPosition.x, y: touch.clientY - zoomPosition.y };
+      } else {
+        // 원래 크기: 스와이프 시작
+        setModalStartX(touch.clientX);
+        setModalIsDragging(true);
+      }
+    }
+  };
+
+  const handleModalTouchMove = (e) => {
+    // 핀치 줌 처리
+    if (isPinchingRef.current && e.touches.length === 2) {
+      e.preventDefault();
+      const newDistance = getPinchDistance(e.touches);
+      const delta = newDistance - lastPinchDistanceRef.current;
+      
+      setZoomScale(prev => {
+        const newScale = prev + delta * 0.01;
+        return Math.min(Math.max(newScale, 1), 4); // 1x ~ 4x
+      });
+      lastPinchDistanceRef.current = newDistance;
+      return;
+    }
+    
+    // 확대 상태에서 패닝
+    if (isPanningRef.current && e.touches.length === 1 && zoomScale > 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const newX = touch.clientX - panStartRef.current.x;
+      const newY = touch.clientY - panStartRef.current.y;
+      
+      // 패닝 범위 제한 (화면 크기 기반)
+      const maxOffsetX = (zoomScale - 1) * window.innerWidth * 0.4;
+      const maxOffsetY = (zoomScale - 1) * window.innerHeight * 0.4;
+      setZoomPosition({
+        x: Math.min(Math.max(newX, -maxOffsetX), maxOffsetX),
+        y: Math.min(Math.max(newY, -maxOffsetY), maxOffsetY)
+      });
+    }
   };
 
   const handleModalTouchEnd = (e) => {
-    if (!modalIsDragging) return;
+    // 핀치 종료
+    if (isPinchingRef.current) {
+      isPinchingRef.current = false;
+      lastPinchDistanceRef.current = 0;
+      // 스케일이 1 이하면 리셋
+      if (zoomScale <= 1) {
+        setZoomScale(1);
+        setZoomPosition({ x: 0, y: 0 });
+      }
+      return;
+    }
+    
+    // 패닝 종료
+    if (isPanningRef.current) {
+      isPanningRef.current = false;
+      return;
+    }
+    
+    // 스와이프 (원래 크기일 때만)
+    if (!modalIsDragging || zoomScale > 1) return;
     
     const endX = e.changedTouches[0].clientX;
     const diffX = modalStartX - endX;
@@ -245,10 +349,56 @@ function App() {
     
     setModalIsDragging(false);
   };
+  
+  // 이미지 변경 시 줌 리셋
+  useEffect(() => {
+    setZoomScale(1);
+    setZoomPosition({ x: 0, y: 0 });
+  }, [modalImageIndex]);
 
   // 모달 닫기
   const closeModal = () => {
     setShowModal(false);
+    setZoomScale(1);
+    setZoomPosition({ x: 0, y: 0 });
+  };
+  
+  // 모달 열릴 때 배경 스크롤/줌 방지
+  useEffect(() => {
+    if (showModal) {
+      // 배경 스크롤 및 줌 방지
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      // 모달 닫히면 복원 (인트로 완료 후에만)
+      if (introComplete) {
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+      }
+    }
+    return () => {
+      if (introComplete) {
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+      }
+    };
+  }, [showModal, introComplete]);
+  
+  // 줌 버튼 핸들러
+  const handleZoomIn = (e) => {
+    e.stopPropagation();
+    setZoomScale(prev => Math.min(prev + 0.5, 4));
+  };
+  
+  const handleZoomOut = (e) => {
+    e.stopPropagation();
+    const newScale = zoomScale - 0.5;
+    if (newScale <= 1) {
+      setZoomScale(1);
+      setZoomPosition({ x: 0, y: 0 });
+    } else {
+      setZoomScale(newScale);
+    }
   };
 
   // 이전/다음 이미지 함수
@@ -326,8 +476,14 @@ END:VCALENDAR`;
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeModal}
+            onClick={() => {
+              // 확대 상태가 아닐 때만 모달 닫기
+              if (zoomScale <= 1) {
+                closeModal();
+              }
+            }}
             onTouchStart={handleModalTouchStart}
+            onTouchMove={handleModalTouchMove}
             onTouchEnd={handleModalTouchEnd}
             style={{
               position: 'fixed',
@@ -338,30 +494,44 @@ END:VCALENDAR`;
               alignItems: 'center',
               justifyContent: 'center',
               padding: '1rem',
-              cursor: 'pointer',
-              touchAction: 'pan-y'
+              cursor: zoomScale > 1 ? 'grab' : 'pointer',
+              touchAction: 'none',
+              overflow: 'hidden'
             }}
           >
             <AnimatePresence mode="wait">
-              <motion.img
+              <motion.div
                 key={modalImageIndex}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                src={galleryImages[modalImageIndex]}
-                alt="확대 이미지"
-                onClick={(e) => e.stopPropagation()}
-                draggable={false}
                 style={{
-                  maxWidth: '100%',
-                  maxHeight: '85vh',
-                  objectFit: 'contain',
-                  borderRadius: '0.5rem',
-                  cursor: 'default',
-                  userSelect: 'none'
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%'
                 }}
-              />
+              >
+                <img
+                  src={galleryImages[modalImageIndex]}
+                  alt="확대 이미지"
+                  onClick={(e) => e.stopPropagation()}
+                  draggable={false}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '85vh',
+                    objectFit: 'contain',
+                    borderRadius: '0.5rem',
+                    cursor: zoomScale > 1 ? 'grab' : 'default',
+                    userSelect: 'none',
+                    transformOrigin: 'center center',
+                    transform: `scale(${zoomScale}) translate(${zoomPosition.x / zoomScale}px, ${zoomPosition.y / zoomScale}px)`,
+                    transition: 'transform 0.1s ease-out'
+                  }}
+                />
+              </motion.div>
             </AnimatePresence>
             
             {/* 모달 좌우 화살표 */}
@@ -447,33 +617,132 @@ END:VCALENDAR`;
             >
               ×
             </button>
-            {/* 이미지 인디케이터 */}
+            
+            {/* 확대 시 리셋 버튼 */}
+            {zoomScale > 1 && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setZoomScale(1);
+                  setZoomPosition({ x: 0, y: 0 });
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  left: '1rem',
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  border: 'none',
+                  borderRadius: '2rem',
+                  padding: '0.5rem 0.875rem',
+                  color: 'white',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
+                  zIndex: 102
+                }}
+              >
+                <span>↺</span>
+                <span>원래 크기</span>
+              </motion.button>
+            )}
+            {/* 하단 컨트롤 영역 */}
             <div style={{
               position: 'absolute',
-              bottom: '2rem',
+              bottom: '1.5rem',
               left: '50%',
               transform: 'translateX(-50%)',
               display: 'flex',
-              gap: '0.5rem'
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.75rem'
             }}>
-              {galleryImages.map((_, index) => (
+              {/* +/- 줌 버튼 */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                borderRadius: '2rem',
+                padding: '0.375rem 0.5rem'
+              }}>
                 <button
-                  key={index}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setModalImageIndex(index);
-                  }}
+                  onClick={handleZoomOut}
+                  disabled={zoomScale <= 1}
                   style={{
-                    width: index === modalImageIndex ? '1.5rem' : '0.5rem',
-                    height: '0.5rem',
-                    borderRadius: '9999px',
+                    width: '2rem',
+                    height: '2rem',
+                    borderRadius: '50%',
                     border: 'none',
-                    backgroundColor: index === modalImageIndex ? 'white' : 'rgba(255, 255, 255, 0.4)',
-                    transition: 'all 300ms',
-                    cursor: 'pointer'
+                    backgroundColor: zoomScale <= 1 ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+                    color: zoomScale <= 1 ? 'rgba(255, 255, 255, 0.3)' : 'white',
+                    fontSize: '1.25rem',
+                    fontWeight: 300,
+                    cursor: zoomScale <= 1 ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
-                />
-              ))}
+                >
+                  −
+                </button>
+                <span style={{ 
+                  color: 'white', 
+                  fontSize: '0.75rem',
+                  minWidth: '2.5rem',
+                  textAlign: 'center'
+                }}>
+                  {Math.round(zoomScale * 100)}%
+                </span>
+                <button
+                  onClick={handleZoomIn}
+                  disabled={zoomScale >= 4}
+                  style={{
+                    width: '2rem',
+                    height: '2rem',
+                    borderRadius: '50%',
+                    border: 'none',
+                    backgroundColor: zoomScale >= 4 ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+                    color: zoomScale >= 4 ? 'rgba(255, 255, 255, 0.3)' : 'white',
+                    fontSize: '1.25rem',
+                    fontWeight: 300,
+                    cursor: zoomScale >= 4 ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  +
+                </button>
+              </div>
+              
+              {/* 이미지 인디케이터 */}
+              <div style={{
+                display: 'flex',
+                gap: '0.5rem'
+              }}>
+                {galleryImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setModalImageIndex(index);
+                    }}
+                    style={{
+                      width: index === modalImageIndex ? '1.5rem' : '0.5rem',
+                      height: '0.5rem',
+                      borderRadius: '9999px',
+                      border: 'none',
+                      backgroundColor: index === modalImageIndex ? 'white' : 'rgba(255, 255, 255, 0.4)',
+                      transition: 'all 300ms',
+                      cursor: 'pointer'
+                    }}
+                  />
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
