@@ -229,7 +229,6 @@ function App() {
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const isPinchingRef = useRef(false);
   const lastPinchDistanceRef = useRef(0);
-  const lastTapTimeRef = useRef(0);
   const panStartRef = useRef({ x: 0, y: 0 });
   const isPanningRef = useRef(false);
   
@@ -251,24 +250,7 @@ function App() {
     
     // 한 손가락 터치
     if (e.touches.length === 1) {
-      const now = Date.now();
       const touch = e.touches[0];
-      
-      // 더블 탭 감지 (300ms 이내)
-      if (now - lastTapTimeRef.current < 300) {
-        e.preventDefault();
-        if (zoomScale > 1) {
-          // 확대 상태면 원래 크기로
-          setZoomScale(1);
-          setZoomPosition({ x: 0, y: 0 });
-        } else {
-          // 원래 크기면 2배 확대
-          setZoomScale(2);
-        }
-        lastTapTimeRef.current = 0;
-        return;
-      }
-      lastTapTimeRef.current = now;
       
       // 확대 상태에서 패닝 시작
       if (zoomScale > 1) {
@@ -353,22 +335,6 @@ function App() {
   // PC용 마우스 핸들러 (모달)
   const handleModalMouseDown = (e) => {
     if (e.button !== 0) return; // 좌클릭만
-    
-    const now = Date.now();
-    
-    // 더블 클릭 감지 (300ms 이내)
-    if (now - lastTapTimeRef.current < 300) {
-      e.preventDefault();
-      if (zoomScale > 1) {
-        setZoomScale(1);
-        setZoomPosition({ x: 0, y: 0 });
-      } else {
-        setZoomScale(2);
-      }
-      lastTapTimeRef.current = 0;
-      return;
-    }
-    lastTapTimeRef.current = now;
     
     // 확대 상태에서 패닝 시작
     if (zoomScale > 1) {
