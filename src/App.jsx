@@ -350,6 +350,76 @@ function App() {
     setModalIsDragging(false);
   };
   
+  // PC용 마우스 핸들러 (모달)
+  const handleModalMouseDown = (e) => {
+    if (e.button !== 0) return; // 좌클릭만
+    
+    const now = Date.now();
+    
+    // 더블 클릭 감지 (300ms 이내)
+    if (now - lastTapTimeRef.current < 300) {
+      e.preventDefault();
+      if (zoomScale > 1) {
+        setZoomScale(1);
+        setZoomPosition({ x: 0, y: 0 });
+      } else {
+        setZoomScale(2);
+      }
+      lastTapTimeRef.current = 0;
+      return;
+    }
+    lastTapTimeRef.current = now;
+    
+    // 확대 상태에서 패닝 시작
+    if (zoomScale > 1) {
+      isPanningRef.current = true;
+      panStartRef.current = { x: e.clientX - zoomPosition.x, y: e.clientY - zoomPosition.y };
+    } else {
+      // 원래 크기: 스와이프 시작
+      setModalStartX(e.clientX);
+      setModalIsDragging(true);
+    }
+  };
+  
+  const handleModalMouseMove = (e) => {
+    // 확대 상태에서 패닝
+    if (isPanningRef.current && zoomScale > 1) {
+      e.preventDefault();
+      const newX = e.clientX - panStartRef.current.x;
+      const newY = e.clientY - panStartRef.current.y;
+      
+      const maxOffsetX = (zoomScale - 1) * window.innerWidth * 0.4;
+      const maxOffsetY = (zoomScale - 1) * window.innerHeight * 0.4;
+      setZoomPosition({
+        x: Math.min(Math.max(newX, -maxOffsetX), maxOffsetX),
+        y: Math.min(Math.max(newY, -maxOffsetY), maxOffsetY)
+      });
+    }
+  };
+  
+  const handleModalMouseUp = (e) => {
+    // 패닝 종료
+    if (isPanningRef.current) {
+      isPanningRef.current = false;
+      return;
+    }
+    
+    // 스와이프 (원래 크기일 때만)
+    if (!modalIsDragging || zoomScale > 1) return;
+    
+    const diffX = modalStartX - e.clientX;
+    
+    if (Math.abs(diffX) > SWIPE_THRESHOLD) {
+      if (diffX > 0 && modalImageIndex < galleryImages.length - 1) {
+        setModalImageIndex(prev => prev + 1);
+      } else if (diffX < 0 && modalImageIndex > 0) {
+        setModalImageIndex(prev => prev - 1);
+      }
+    }
+    
+    setModalIsDragging(false);
+  };
+  
   // 이미지 변경 시 줌 리셋
   useEffect(() => {
     setZoomScale(1);
@@ -477,14 +547,18 @@ END:VCALENDAR`;
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => {
-              // 확대 상태가 아닐 때만 모달 닫기
-              if (zoomScale <= 1) {
+              // 확대 상태가 아닐 때만, 그리고 드래그 중이 아닐 때만 모달 닫기
+              if (zoomScale <= 1 && !isPanningRef.current) {
                 closeModal();
               }
             }}
             onTouchStart={handleModalTouchStart}
             onTouchMove={handleModalTouchMove}
             onTouchEnd={handleModalTouchEnd}
+            onMouseDown={handleModalMouseDown}
+            onMouseMove={handleModalMouseMove}
+            onMouseUp={handleModalMouseUp}
+            onMouseLeave={handleModalMouseUp}
             style={{
               position: 'fixed',
               inset: 0,
@@ -494,7 +568,7 @@ END:VCALENDAR`;
               alignItems: 'center',
               justifyContent: 'center',
               padding: '1rem',
-              cursor: zoomScale > 1 ? 'grab' : 'pointer',
+              cursor: zoomScale > 1 ? (isPanningRef.current ? 'grabbing' : 'grab') : 'pointer',
               touchAction: 'none',
               overflow: 'hidden'
             }}
