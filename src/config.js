@@ -280,30 +280,30 @@ export const config = {
       '/SakuraPetals02.png',
       '/SakuraPetals03.png',
     ],
-    count: 15,                        // 벚꽃잎 개수
+    maxConcurrent: 4,                 // 동시에 떨어지는 최대 개수
+    spawnInterval: {                  // 새로운 벚꽃잎 생성 간격 (초)
+      min: 1.5,
+      max: 3,
+    },
+    spawnCount: {                     // 한 번에 생성되는 개수
+      min: 1,
+      max: 4,
+    },
     size: {                           // 벚꽃잎 크기 (px)
       min: 20,
       max: 40,
     },
-    opacity: {                         // 투명도
-      min: 0.3,
-      max: 0.6,
+    duration: {                       // 떨어지는 시간 (초)
+      min: 8,
+      max: 15,
     },
-    duration: {                        // 떨어지는 시간 (초)
-      min: 5,
-      max: 10,
+    curveRandomness: {                // 곡선 랜덤성 (px)
+      min: 50,
+      max: 150,
     },
-    sway: {                           // 좌우 흔들림 범위 (px)
-      min: 30,
-      max: 80,
-    },
-    rotation: {                        // 회전 범위 (도)
-      min: -180,
-      max: 180,
-    },
-    delay: {                          // 시작 지연 시간 (초)
-      min: 0,
-      max: 2,
+    rotation: {                       // 회전 범위 (도)
+      min: -360,
+      max: 360,
     },
   },
 };

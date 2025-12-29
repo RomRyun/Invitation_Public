@@ -20,28 +20,59 @@ const preventImageActions = (e) => {
 };
 
 // 벚꽃잎 컴포넌트
-const CherryBlossomPetal = ({ index, config: petalConfig }) => {
+const CherryBlossomPetal = ({ id, config: petalConfig, onComplete }) => {
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
   const random = (min, max) => Math.random() * (max - min) + min;
   
   useEffect(() => {
-    const handleResize = () => setScreenHeight(window.innerHeight);
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+      setScreenHeight(window.innerHeight);
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
   // 랜덤 값 생성 (컴포넌트 생성 시 한 번만)
   const randomValues = useRef({
-    startX: random(0, 100),
+    // 우상단 시작 위치 (80-100% x, -50px y)
+    startX: random(80, 100),
+    startY: -50,
+    // 좌하단 끝 위치 (왼쪽으로 이동하면서 아래로)
+    endX: random(-100, -50), // 화면 왼쪽 밖으로
+    endY: screenHeight + 100,
+    // 곡선 중간점 (랜덤)
+    midX: random(20, 60),
+    midY: random(screenHeight * 0.3, screenHeight * 0.7),
+    // 곡선 랜덤성
+    curveX: random(petalConfig.curveRandomness.min, petalConfig.curveRandomness.max),
+    curveY: random(petalConfig.curveRandomness.min, petalConfig.curveRandomness.max),
     duration: random(petalConfig.duration.min, petalConfig.duration.max),
-    delay: random(petalConfig.delay.min, petalConfig.delay.max),
-    swayAmount: random(petalConfig.sway.min, petalConfig.sway.max),
     rotation: random(petalConfig.rotation.min, petalConfig.rotation.max),
     size: random(petalConfig.size.min, petalConfig.size.max),
-    opacity: random(petalConfig.opacity.min, petalConfig.opacity.max),
   }).current;
   
-  const petalImage = petalConfig.petalImages[index % petalConfig.petalImages.length];
+  const petalImage = petalConfig.petalImages[Math.floor(Math.random() * petalConfig.petalImages.length)];
+  
+  // 곡선 경로 생성 (우상단 -> 중간 곡선 -> 좌하단)
+  // 픽셀 단위로 통일
+  const startXPx = (randomValues.startX / 100) * screenWidth;
+  const midXPx = (randomValues.midX / 100) * screenWidth;
+  const endXPx = randomValues.endX;
+  
+  const pathX = [
+    startXPx,
+    midXPx + randomValues.curveX,
+    midXPx - randomValues.curveX,
+    endXPx
+  ];
+  const pathY = [
+    randomValues.startY,
+    randomValues.midY + randomValues.curveY,
+    randomValues.midY - randomValues.curveY,
+    randomValues.endY
+  ];
   
   return (
     <motion.img
@@ -49,43 +80,27 @@ const CherryBlossomPetal = ({ index, config: petalConfig }) => {
       alt=""
       style={{
         position: 'fixed',
-        top: '-50px',
+        top: `${randomValues.startY}px`,
         left: `${randomValues.startX}%`,
         width: `${randomValues.size}px`,
         height: 'auto',
-        opacity: randomValues.opacity,
         pointerEvents: 'none',
         zIndex: 1,
       }}
       initial={{ 
-        y: -50,
-        x: 0,
+        y: randomValues.startY,
+        x: startXPx,
         rotate: 0,
       }}
       animate={{
-        y: screenHeight + 100,
-        x: [0, randomValues.swayAmount, -randomValues.swayAmount, randomValues.swayAmount, 0],
-        rotate: [0, randomValues.rotation, -randomValues.rotation / 2, randomValues.rotation, 0],
+        y: pathY,
+        x: pathX,
+        rotate: [0, randomValues.rotation * 0.5, randomValues.rotation, randomValues.rotation * 1.5],
       }}
       transition={{
-        y: {
-          duration: randomValues.duration,
-          delay: randomValues.delay,
-          repeat: Infinity,
-          ease: 'linear',
-        },
-        x: {
-          duration: randomValues.duration,
-          delay: randomValues.delay,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        },
-        rotate: {
-          duration: randomValues.duration,
-          delay: randomValues.delay,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        },
+        duration: randomValues.duration,
+        ease: [0.25, 0.1, 0.25, 1], // 부드러운 곡선
+        onComplete: onComplete,
       }}
     />
   );
@@ -96,7 +111,57 @@ const CherryBlossomEffect = () => {
   if (!config.cherryBlossom?.enabled) return null;
   
   const petalConfig = config.cherryBlossom;
-  const petals = Array.from({ length: petalConfig.count }, (_, i) => i);
+  const [activePetals, setActivePetals] = useState([]);
+  const petalIdRef = useRef(0);
+  const activeCountRef = useRef(0);
+  
+  useEffect(() => {
+    const random = (min, max) => Math.random() * (max - min) + min;
+    
+    const spawnPetals = () => {
+      const currentCount = activeCountRef.current;
+      const maxCount = petalConfig.maxConcurrent;
+      
+      if (currentCount >= maxCount) return;
+      
+      // 생성할 개수 결정 (1~4개, 최대 개수 제한)
+      const spawnCount = Math.min(
+        Math.floor(random(petalConfig.spawnCount.min, petalConfig.spawnCount.max + 1)),
+        maxCount - currentCount
+      );
+      
+      // 새로운 벚꽃잎 생성
+      const newPetals = Array.from({ length: spawnCount }, () => {
+        const id = petalIdRef.current++;
+        return {
+          id,
+          onComplete: () => {
+            setActivePetals(prev => {
+              activeCountRef.current = prev.filter(p => p.id !== id).length;
+              return prev.filter(p => p.id !== id);
+            });
+          }
+        };
+      });
+      
+      activeCountRef.current += spawnCount;
+      setActivePetals(prev => [...prev, ...newPetals]);
+    };
+    
+    // 첫 생성
+    spawnPetals();
+    
+    // 주기적으로 생성
+    const scheduleNext = () => {
+      const delay = random(petalConfig.spawnInterval.min * 1000, petalConfig.spawnInterval.max * 1000);
+      setTimeout(() => {
+        spawnPetals();
+        scheduleNext();
+      }, delay);
+    };
+    
+    scheduleNext();
+  }, [petalConfig]);
   
   return (
     <div style={{
@@ -109,8 +174,13 @@ const CherryBlossomEffect = () => {
       zIndex: 1,
       overflow: 'hidden',
     }}>
-      {petals.map((index) => (
-        <CherryBlossomPetal key={index} index={index} config={petalConfig} />
+      {activePetals.map((petal) => (
+        <CherryBlossomPetal 
+          key={petal.id} 
+          id={petal.id}
+          config={petalConfig} 
+          onComplete={petal.onComplete}
+        />
       ))}
     </div>
   );
