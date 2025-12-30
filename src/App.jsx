@@ -19,6 +19,190 @@ const preventImageActions = (e) => {
   }
 };
 
+// 벚꽃잎 컴포넌트
+const SakuraPetal = ({ id, config: petalConfig }) => {
+  const petalRef = useRef(null);
+  const random = (min, max) => Math.random() * (max - min) + min;
+  
+  // 랜덤 값 생성 (컴포넌트 생성 시 한 번만)
+  const randomValues = useRef(() => {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const documentHeight = Math.max(document.documentElement.scrollHeight, screenHeight * 2);
+    
+    // 우상단 시작 위치 (90-100% x)
+    const startX = random(screenWidth * 0.9, screenWidth * 1.0);
+    const startY = -100;
+    
+    // 좌하단 끝 위치 (왼쪽으로 이동) - 명확한 대각선
+    const endX = random(-screenWidth * 0.2, -screenWidth * 0.1);
+    const endY = documentHeight + 200; // 문서 전체 높이 고려
+    
+    // 중간 곡선점 (대각선 경로)
+    const midX = random(screenWidth * 0.2, screenWidth * 0.5);
+    const midY = random(screenHeight * 0.3, screenHeight * 0.7);
+    
+    // 나풀대는 효과 (좌우 흔들림)
+    const swayX = random(petalConfig.sway.min, petalConfig.sway.max);
+    const swayY = random(petalConfig.sway.min * 0.3, petalConfig.sway.max * 0.5);
+    
+    return {
+      startX,
+      startY,
+      midX: midX + (Math.random() > 0.5 ? swayX : -swayX),
+      midY: midY + swayY,
+      endX,
+      endY,
+      duration: random(petalConfig.duration.min, petalConfig.duration.max),
+      delay: id * (petalConfig.delay.max / petalConfig.count) + random(0, 2),
+      rotation: random(petalConfig.rotation.min, petalConfig.rotation.max),
+      size: random(petalConfig.size.min, petalConfig.size.max),
+    };
+  }()).current;
+  
+  const petalImage = petalConfig.petalImages[Math.floor(Math.random() * petalConfig.petalImages.length)];
+  
+  useEffect(() => {
+    if (!petalRef.current) return;
+    
+    const petal = petalRef.current;
+    const uniqueId = `sakura-petal-${id}`;
+    
+    // 이미지가 로드된 후 애니메이션 시작
+    const setupAnimation = () => {
+      // CSS keyframes 생성
+      const keyframes = `
+        @keyframes ${uniqueId} {
+          0% {
+            transform: translate3d(${randomValues.startX}px, ${randomValues.startY}px, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate3d(${randomValues.midX}px, ${randomValues.midY}px, 0) rotate(${randomValues.rotation * 0.5}deg);
+          }
+          100% {
+            transform: translate3d(${randomValues.endX}px, ${randomValues.endY}px, 0) rotate(${randomValues.rotation}deg);
+          }
+        }
+      `;
+      
+      // 스타일 추가
+      let styleSheet = document.getElementById(uniqueId);
+      if (!styleSheet) {
+        styleSheet = document.createElement('style');
+        styleSheet.id = uniqueId;
+        document.head.appendChild(styleSheet);
+      }
+      styleSheet.textContent = keyframes;
+      
+      // 초기 위치 설정
+      petal.style.transform = `translate3d(${randomValues.startX}px, ${randomValues.startY}px, 0) rotate(0deg)`;
+      
+      // 애니메이션 적용 (무한 반복)
+      petal.style.animation = `${uniqueId} ${randomValues.duration}s cubic-bezier(0.4, 0, 0.6, 1) ${randomValues.delay}s infinite`;
+    };
+    
+    // 이미지가 이미 로드되어 있으면 바로 시작
+    if (petal.complete) {
+      setupAnimation();
+    } else {
+      // 이미지 로드 대기
+      petal.onload = setupAnimation;
+    }
+    
+    return () => {
+      const styleSheet = document.getElementById(uniqueId);
+      if (styleSheet && document.head.contains(styleSheet)) {
+        document.head.removeChild(styleSheet);
+      }
+    };
+  }, [id]);
+  
+  return (
+    <div
+      ref={petalRef}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: `${randomValues.size}px`,
+        height: `${randomValues.size}px`,
+        pointerEvents: 'none',
+        zIndex: 9999,
+        willChange: 'transform',
+        visibility: 'visible',
+        backgroundImage: `url(${petalImage})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }}
+      onError={() => {
+        console.error('❌ 벚꽃잎 이미지 로드 실패:', petalImage);
+      }}
+    >
+      <img
+        src={petalImage}
+        alt=""
+        style={{ display: 'none' }}
+        onError={(e) => {
+          console.error('❌ 벚꽃잎 이미지 로드 실패:', petalImage);
+          // 이미지 로드 실패 시 빨간색 박스로 표시 (디버깅용)
+          if (petalRef.current) {
+            petalRef.current.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+            petalRef.current.style.border = '2px solid red';
+          }
+        }}
+        onLoad={() => {
+          console.log('✅ 벚꽃잎 이미지 로드 성공:', petalImage, '크기:', randomValues.size);
+        }}
+      />
+    </div>
+  );
+};
+
+// 벚꽃잎 효과 컴포넌트
+const SakuraPetalEffect = () => {
+  useEffect(() => {
+    console.log('🌸 SakuraPetalEffect 렌더링 시작!', {
+      enabled: config.sakuraPetal?.enabled,
+      count: config.sakuraPetal?.count,
+      images: config.sakuraPetal?.petalImages
+    });
+  }, []);
+  
+  if (!config.sakuraPetal?.enabled) {
+    console.warn('⚠️ 벚꽃잎 효과 비활성화됨 (enabled: false)');
+    return null;
+  }
+  
+  const petalConfig = config.sakuraPetal;
+  
+  // 고정된 개수만 생성 (무한 반복되므로 더 이상 생성하지 않음)
+  const petals = useRef(
+    Array.from({ length: petalConfig.count }, (_, i) => i)
+  ).current;
+  
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      pointerEvents: 'none',
+      zIndex: 9999,
+      overflow: 'visible',
+    }}>
+      {petals.map((id) => (
+        <SakuraPetal 
+          key={id} 
+          id={id}
+          config={petalConfig} 
+        />
+      ))}
+    </div>
+  );
+};
+
 function App() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [copied, setCopied] = useState({ 
@@ -109,6 +293,7 @@ function App() {
   const [introComplete, setIntroComplete] = useState(false);
   
   useEffect(() => {
+    console.log('🚀 자동 스크롤 시작');
     // 스크롤 금지
     document.body.style.overflow = 'hidden';
     
@@ -131,6 +316,7 @@ function App() {
         // 애니메이션 완료 - 스크롤 허용
         document.body.style.overflow = '';
         setIntroComplete(true);
+        console.log('✅ 자동 스크롤 완료! introComplete = true');
       }
     };
     
@@ -521,6 +707,9 @@ END:VCALENDAR`;
       backgroundColor: theme.bgColor,
       boxShadow: '0 0 30px rgba(0,0,0,0.1)'
     }}>
+      {/* 벚꽃잎 효과 - 자동 스크롤 완료 후 시작 */}
+      <SakuraPetalEffect />
+      
       {/* 이미지 확대 모달 */}
       <AnimatePresence>
         {showModal && (
@@ -2218,6 +2407,7 @@ END:VCALENDAR`;
           </AnimatePresence>
         </motion.button>
       </div>
+
     </div>
   );
 }

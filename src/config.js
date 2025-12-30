@@ -269,4 +269,5 @@ export const config = {
     repository: 'https://github.com/RomRyun/Invitation',
     showRepository: true,
   },
+
 };
