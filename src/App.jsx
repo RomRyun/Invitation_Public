@@ -68,34 +68,49 @@ const SakuraPetal = ({ id, config: petalConfig }) => {
     const petal = petalRef.current;
     const uniqueId = `sakura-petal-${id}`;
     
-    // CSS keyframes 생성
-    const keyframes = `
-      @keyframes ${uniqueId} {
-        0% {
-          transform: translate3d(${randomValues.startX}px, ${randomValues.startY}px, 0) rotate(0deg);
+    // 이미지가 로드된 후 애니메이션 시작
+    const setupAnimation = () => {
+      // CSS keyframes 생성
+      const keyframes = `
+        @keyframes ${uniqueId} {
+          0% {
+            transform: translate3d(${randomValues.startX}px, ${randomValues.startY}px, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate3d(${randomValues.midX}px, ${randomValues.midY}px, 0) rotate(${randomValues.rotation * 0.5}deg);
+          }
+          100% {
+            transform: translate3d(${randomValues.endX}px, ${randomValues.endY}px, 0) rotate(${randomValues.rotation}deg);
+          }
         }
-        50% {
-          transform: translate3d(${randomValues.midX}px, ${randomValues.midY}px, 0) rotate(${randomValues.rotation * 0.5}deg);
-        }
-        100% {
-          transform: translate3d(${randomValues.endX}px, ${randomValues.endY}px, 0) rotate(${randomValues.rotation}deg);
-        }
+      `;
+      
+      // 스타일 추가
+      let styleSheet = document.getElementById(uniqueId);
+      if (!styleSheet) {
+        styleSheet = document.createElement('style');
+        styleSheet.id = uniqueId;
+        document.head.appendChild(styleSheet);
       }
-    `;
+      styleSheet.textContent = keyframes;
+      
+      // 초기 위치 설정
+      petal.style.transform = `translate3d(${randomValues.startX}px, ${randomValues.startY}px, 0) rotate(0deg)`;
+      
+      // 애니메이션 적용 (무한 반복)
+      petal.style.animation = `${uniqueId} ${randomValues.duration}s cubic-bezier(0.4, 0, 0.6, 1) ${randomValues.delay}s infinite`;
+    };
     
-    // 스타일 추가
-    let styleSheet = document.getElementById(uniqueId);
-    if (!styleSheet) {
-      styleSheet = document.createElement('style');
-      styleSheet.id = uniqueId;
-      document.head.appendChild(styleSheet);
+    // 이미지가 이미 로드되어 있으면 바로 시작
+    if (petal.complete) {
+      setupAnimation();
+    } else {
+      // 이미지 로드 대기
+      petal.onload = setupAnimation;
     }
-    styleSheet.textContent = keyframes;
-    
-    // 애니메이션 적용 (무한 반복)
-    petal.style.animation = `${uniqueId} ${randomValues.duration}s cubic-bezier(0.4, 0, 0.6, 1) ${randomValues.delay}s infinite`;
     
     return () => {
+      const styleSheet = document.getElementById(uniqueId);
       if (styleSheet && document.head.contains(styleSheet)) {
         document.head.removeChild(styleSheet);
       }
@@ -127,6 +142,7 @@ const SakuraPetal = ({ id, config: petalConfig }) => {
         pointerEvents: 'none',
         zIndex: 9999,
         willChange: 'transform',
+        visibility: 'visible',
       }}
     />
   );
