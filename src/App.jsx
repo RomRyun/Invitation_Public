@@ -1425,9 +1425,10 @@ END:VCALENDAR`;
                     width: '100%',
                     height: '160%',
                     objectFit: 'cover',
-                    objectPosition: '90% 25%',
+                    objectPosition: 'center 25%',
                     position: 'absolute',
                     top: '-30%',
+                    left: '-15%',
                     transform: 'scale(1.2)',
                     ...getImageProtectionStyle()
                   }}
