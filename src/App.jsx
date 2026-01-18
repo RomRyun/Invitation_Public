@@ -1425,7 +1425,7 @@ END:VCALENDAR`;
                     width: '100%',
                     height: '160%',
                     objectFit: 'cover',
-                    objectPosition: '10% 25%',
+                    objectPosition: '0% 25%',
                     position: 'absolute',
                     top: '-30%',
                     transform: 'scale(1.2)',
