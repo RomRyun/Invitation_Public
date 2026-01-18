@@ -227,27 +227,47 @@ function App() {
   
   // 카카오 SDK 초기화
   useEffect(() => {
-    if (config.kakaoShare?.enabled && config.kakaoShare?.javascriptKey && config.kakaoShare.javascriptKey !== 'YOUR_KAKAO_JAVASCRIPT_KEY') {
-      if (window.Kakao && !window.Kakao.isInitialized()) {
-        window.Kakao.init(config.kakaoShare.javascriptKey);
-        setKakaoInitialized(true);
-        console.log('✅ 카카오 SDK 초기화 완료');
-      } else if (window.Kakao?.isInitialized()) {
-        setKakaoInitialized(true);
+    const initKakao = () => {
+      if (config.kakaoShare?.enabled && config.kakaoShare?.javascriptKey && config.kakaoShare.javascriptKey !== 'YOUR_KAKAO_JAVASCRIPT_KEY') {
+        if (window.Kakao && !window.Kakao.isInitialized()) {
+          try {
+            window.Kakao.init(config.kakaoShare.javascriptKey);
+            setKakaoInitialized(true);
+            console.log('✅ 카카오 SDK 초기화 완료');
+          } catch (e) {
+            console.error('카카오 SDK 초기화 실패:', e);
+          }
+        } else if (window.Kakao?.isInitialized()) {
+          setKakaoInitialized(true);
+        }
       }
+    };
+    
+    // SDK 로드 대기
+    if (window.Kakao) {
+      initKakao();
+    } else {
+      // SDK가 아직 로드되지 않았으면 잠시 후 재시도
+      const timer = setTimeout(initKakao, 500);
+      return () => clearTimeout(timer);
     }
   }, []);
   
   // 카카오톡 공유 함수
   const shareKakao = () => {
     if (!window.Kakao) {
-      alert('카카오 SDK가 로드되지 않았습니다.');
+      alert('카카오 SDK가 로드되지 않았습니다.\n잠시 후 다시 시도해주세요.');
       return;
     }
     
     if (!window.Kakao.isInitialized()) {
-      alert('카카오 SDK가 초기화되지 않았습니다.\nconfig.js에서 javascriptKey를 설정해주세요.');
-      return;
+      // 초기화 시도
+      try {
+        window.Kakao.init(config.kakaoShare.javascriptKey);
+      } catch (e) {
+        alert('카카오 SDK 초기화 실패.\nconfig.js에서 javascriptKey를 확인해주세요.');
+        return;
+      }
     }
     
     // 커스텀 템플릿 사용 시
