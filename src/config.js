@@ -6,7 +6,7 @@
 // ===== 이미지 폴더 설정 =====
 // '' = 기본 폴더 (public/)
 // 'cartoon' = 카툰 스타일 (public/cartoon/)
-export const imageFolder = 'cartoon';
+export const imageFolder = 'public';
 
 // ===== 테마 색상 =====
 export const theme = {
@@ -276,7 +276,31 @@ export const config = {
   },
 
   // ============================================================
-  // 10. 벚꽃잎 효과 (Cherry Blossom Petal Effect)
+  // 10. 카카오톡 공유 설정
+  // ============================================================
+  kakaoShare: {
+    enabled: true,
+    // 카카오 개발자 콘솔에서 발급받은 JavaScript 키
+    // https://developers.kakao.com > 내 애플리케이션 > 앱 키
+    javascriptKey: 'ce16819fd83d4682eff018e2613e7c1a',
+    
+    // 메시지 템플릿 ID (선택사항 - 커스텀 템플릿 사용 시)
+    // https://developers.kakao.com > 도구 > 메시지 템플릿
+    templateId: null, // 예: 123456
+    
+    // 기본 공유 설정 (템플릿 미사용 시)
+    title: '아롬 💍 경륜, 결혼합니다',
+    description: '2026년 4월 18일 (토) 오후 1시\n청주 에스가든 웨딩 컨벤션',
+    imageUrl: 'https://invitation-inky-pi.vercel.app/preview.jpg', // ⚠️ 반드시 https 공개 URL
+    webUrl: 'https://invitation-inky-pi.vercel.app/',              // ⚠️ 배포된 청첩장 URL
+    
+    // 버튼 텍스트
+    buttonTitle: '청첩장 보기',
+    shareButtonText: '카카오톡 공유하기',
+  },
+
+  // ============================================================
+  // 11. 벚꽃잎 효과 (Cherry Blossom Petal Effect)
   // ============================================================
   sakuraPetal: {
     enabled: true,                    // 효과 활성화 여부

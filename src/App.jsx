@@ -221,8 +221,65 @@ function App() {
   const [activeMapTab, setActiveMapTab] = useState('naver');
   const [activeCalendarTab, setActiveCalendarTab] = useState('google');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [kakaoInitialized, setKakaoInitialized] = useState(false);
   const touchStartTime = useRef(0);
   const touchMoved = useRef(false);
+  
+  // 카카오 SDK 초기화
+  useEffect(() => {
+    if (config.kakaoShare?.enabled && config.kakaoShare?.javascriptKey && config.kakaoShare.javascriptKey !== 'YOUR_KAKAO_JAVASCRIPT_KEY') {
+      if (window.Kakao && !window.Kakao.isInitialized()) {
+        window.Kakao.init(config.kakaoShare.javascriptKey);
+        setKakaoInitialized(true);
+        console.log('✅ 카카오 SDK 초기화 완료');
+      } else if (window.Kakao?.isInitialized()) {
+        setKakaoInitialized(true);
+      }
+    }
+  }, []);
+  
+  // 카카오톡 공유 함수
+  const shareKakao = () => {
+    if (!window.Kakao) {
+      alert('카카오 SDK가 로드되지 않았습니다.');
+      return;
+    }
+    
+    if (!window.Kakao.isInitialized()) {
+      alert('카카오 SDK가 초기화되지 않았습니다.\nconfig.js에서 javascriptKey를 설정해주세요.');
+      return;
+    }
+    
+    // 커스텀 템플릿 사용 시
+    if (config.kakaoShare.templateId) {
+      window.Kakao.Share.sendCustom({
+        templateId: config.kakaoShare.templateId,
+      });
+    } else {
+      // 기본 피드 메시지 공유
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: config.kakaoShare.title || `${config.groom.name} ♥ ${config.bride.name} 결혼합니다`,
+          description: config.kakaoShare.description || `${config.wedding.year} ${config.wedding.monthDay} ${config.wedding.dayOfWeek} ${config.wedding.timeText}\n${config.location.venue.name}`,
+          imageUrl: config.kakaoShare.imageUrl,
+          link: {
+            mobileWebUrl: config.kakaoShare.webUrl,
+            webUrl: config.kakaoShare.webUrl,
+          },
+        },
+        buttons: [
+          {
+            title: config.kakaoShare.buttonTitle || '청첩장 보기',
+            link: {
+              mobileWebUrl: config.kakaoShare.webUrl,
+              webUrl: config.kakaoShare.webUrl,
+            },
+          },
+        ],
+      });
+    }
+  };
   
   // 갤러리 Section scroll-linked zoom
   const galleryRef = useRef(null);
@@ -2233,6 +2290,85 @@ END:VCALENDAR`;
           </motion.div>
         </div>
       </section>
+
+      {/* 공유하기 섹션 */}
+      {config.kakaoShare?.enabled && (
+        <section className="py-8">
+          <div className="container">
+            <motion.div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '0.75rem',
+                flexWrap: 'wrap'
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* 카카오톡 공유 버튼 */}
+              <motion.button
+                onClick={shareKakao}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  backgroundColor: '#FEE500',
+                  color: '#191919',
+                  borderRadius: '0.75rem',
+                  padding: '0.875rem 1.5rem',
+                  fontSize: '0.9375rem',
+                  fontWeight: 500,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                }}
+                whileHover={{ scale: 1.03, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {/* 카카오톡 아이콘 */}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 3C6.48 3 2 6.58 2 11c0 2.8 1.8 5.27 4.5 6.7-.2.74-.73 2.7-.84 3.12-.13.5.18.5.38.36.16-.11 2.5-1.7 3.52-2.38.47.06.95.1 1.44.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+                </svg>
+                {config.kakaoShare.shareButtonText || '카카오톡 공유하기'}
+              </motion.button>
+              
+              {/* URL 복사 버튼 */}
+              <motion.button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('청첩장 주소가 복사되었습니다!');
+                  });
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  color: '#374151',
+                  borderRadius: '0.75rem',
+                  padding: '0.875rem 1.5rem',
+                  fontSize: '0.9375rem',
+                  fontWeight: 500,
+                  border: '1px solid rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                }}
+                whileHover={{ scale: 1.03, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {/* 링크 아이콘 */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                링크 복사
+              </motion.button>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Footer - 애니메이션 */}
       <motion.footer 
