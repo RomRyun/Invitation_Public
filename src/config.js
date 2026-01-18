@@ -282,7 +282,7 @@ export const config = {
     enabled: true,
     // 카카오 개발자 콘솔에서 발급받은 JavaScript 키
     // https://developers.kakao.com > 내 애플리케이션 > 앱 키
-    javascriptKey: 'ce16819fd83d4682eff018e2613e7c1a',
+    javascriptKey: 'e6b41be93b74a0056cf833ab11cc7e6a',
     
     // 메시지 템플릿 ID (선택사항 - 커스텀 템플릿 사용 시)
     // https://developers.kakao.com > 도구 > 메시지 템플릿
