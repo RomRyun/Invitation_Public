@@ -25,7 +25,7 @@ export const config = {
     backgroundImage: imageFolder ? `/${imageFolder}/hero_main.jpg` : '/hero_main.jpg',
     
     // A. 영문 이름 1 (신랑)
-    nameEn1: 'Lee Ah-rom',
+    nameEn1: 'Lee Re',
     nameEn1Font: "'La Paloma', 'Great Vibes', cursive",
     nameEn1Size: '26px',
     
@@ -35,12 +35,12 @@ export const config = {
     ampersandSize: '18px',
     
     // C. 영문 이름 2 (신부)
-    nameEn2: 'Shin Gyeong-ryun',
+    nameEn2: 'Mon',
     nameEn2Font: "'La Paloma', 'Great Vibes', cursive",
     nameEn2Size: '26px',
     
     // D. 한글 초대 문구
-    inviteText: '아롬 ♥ 경륜의 결혼식에 초대합니다',
+    inviteText: '이레님 ♥ 몬님의 결혼식에 초대합니다',
     inviteTextFont: "'KoPubWorldDotum', sans-serif",
     inviteTextSize: '16px',
     inviteTextWeight: 300,
@@ -107,15 +107,15 @@ export const config = {
     brideImage: imageFolder ? `/${imageFolder}/bride.jpg` : '/bride.jpg',
   },
   groom: {
-    name: '아롬',
-    fatherName: '이원조',
-    motherName: '이점숙',
+    name: '이레님',
+    fatherName: '이레 대디',
+    motherName: '이레 마미',
     relation: '장남',
   },
   bride: {
-    name: '경륜',
-    fatherName: '신락현',
-    motherName: '곽광숙',
+    name: '몬님',
+    fatherName: '몬 대디',
+    motherName: '몬 마미',
     relation: '장녀',
   },
 
@@ -217,40 +217,40 @@ export const config = {
     holderLabel: '예금주',
     
     groom: {
-      bank: '신한은행',
-      accountNumber: '110-482-263062',
-      holder: '이아롬',
-      phone: '010-2286-0608',
+      bank: '은행나무',
+      accountNumber: '123-456-7890',
+      holder: '이레님',
+      phone: '010-1234-5678',
     },
     groomFather: {
-      bank: '농협',
-      accountNumber: '246-02-228936',
-      holder: '이원조',
-      phone: '010-5652-0359',
+      bank: '은행나무',
+      accountNumber: '123-456-7890',
+      holder: '이레 대디',
+      phone: '010-1234-5678',
     },
     groomMother: {
-      bank: '농협',
-      accountNumber: '246-02-138021',
-      holder: '이점숙',
-      phone: '010-5190-0359',
+      bank: '은행나무',
+      accountNumber: '123-456-7890',
+      holder: '이레 마미',
+      phone: '010-1234-5678',
     },
     bride: {
-      bank: '국민은행',
-      accountNumber: '746702-01-202912',
-      holder: '신경륜',
-      phone: '010-5385-8717',
+      bank: '은행나무',
+      accountNumber: '123-456-7890',
+      holder: '몬님',
+      phone: '010-1234-5678',
     },
     brideFather: {
-      bank: '농협',
-      accountNumber: '401145-51-016954',
-      holder: '신락현',
-      phone: '010-3909-7045',
+      bank: '은행나무',
+      accountNumber: '123-456-7890',
+      holder: '몬 대디',
+      phone: '010-1234-5678',
     },
     brideMother: {
-      bank: '우리',
-      accountNumber: '2761-9679-502001',
-      holder: '곽광숙',
-      phone: '010-8359-6774',
+      bank: '은행나무',
+      accountNumber: '123-456-7890',
+      holder: '몬 마미',
+      phone: '010-1234-5678',
     },
     
     callButton: '📞 전화하기',
@@ -270,7 +270,7 @@ export const config = {
   // 9. 푸터
   // ============================================================
   footer: {
-    message: 'Made by 아롬',
+    message: 'Made by 이레님',
     repository: 'https://github.com/RomRyun/Invitation_Public',
     showRepository: true,
   },
@@ -289,7 +289,7 @@ export const config = {
     templateId: 128071, // 커스텀 템플릿 사용
     
     // 기본 공유 설정 (템플릿 미사용 시)
-    title: '아롬 💍 경륜, 결혼합니다',
+    title: '이레님 💍 몬님, 결혼합니다',
     description: '2026년 4월 18일 (토) 오후 1시\n청주 에스가든 웨딩 컨벤션',
     imageUrl: 'https://invitation-inky-pi.vercel.app/preview.jpg', // ⚠️ 반드시 https 공개 URL
     webUrl: 'https://invitation-inky-pi.vercel.app/',              // ⚠️ 배포된 청첩장 URL
