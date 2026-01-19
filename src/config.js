@@ -271,7 +271,7 @@ export const config = {
   // ============================================================
   footer: {
     message: 'Made by 아롬',
-    repository: 'https://github.com/RomRyun/Invitation',
+    repository: 'https://github.com/RomRyun/Invitation_Public',
     showRepository: true,
   },
 
